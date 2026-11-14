@@ -228,6 +228,20 @@ footer a{text-decoration:none;color:var(--gold2)}
 .chefpic figcaption small{display:block;font-family:var(--body);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-top:6px}
 @media(max-width:820px){.chefpic{max-width:300px}}
 @media(max-width:640px){.cuis{white-space:nowrap;font-size:clamp(9px,2.75vw,12px);letter-spacing:.1em}}
+.review{text-align:center;background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.review h2{font-size:clamp(34px,5vw,48px);margin:10px 0 0}
+.rv-ask{display:flex;justify-content:center;gap:14px;margin:30px auto 0;max-width:560px}
+.rv-c{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 8px;border:1px solid var(--line);border-radius:12px;background:rgba(11,31,21,.6);color:var(--ink);font:400 14px var(--body);letter-spacing:.06em;text-decoration:none;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.rv-c span{font-size:42px;line-height:1}
+.rv-c:hover,.rv-c:focus-visible{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 0 22px rgba(207,169,85,.25)}
+.rv-form{max-width:480px;margin:28px auto 0;text-align:left}
+.rv-form p{color:var(--muted);text-align:center;margin:0 0 16px}
+.rv-form textarea,.rv-form input{width:100%;font:inherit;font-size:16px;color:var(--ink);background:rgba(11,31,21,.7);border:1px solid var(--line);border-radius:8px;padding:13px;margin-bottom:10px}
+.rv-form textarea{min-height:110px;resize:vertical}
+.rv-form .btn{width:100%;margin-top:6px;text-align:center;justify-content:center}
+.rv-g{display:block;text-align:center;margin-top:14px;color:var(--gold);font-size:14px}
+.rv-done{color:var(--gold2);margin-top:26px;font-size:18px}
+@media(max-width:480px){.rv-ask{gap:8px}.rv-c{padding:18px 4px;font-size:12px}.rv-c span{font-size:34px}}
 </style>
 
 </head>
@@ -235,7 +249,7 @@ footer a{text-decoration:none;color:var(--gold2)}
 <a class="nowopen" href="#visit"><b>Now Open</b><i>◆</i><span class="xs">Downtown Kitchener<i>◆</i></span>Daily 12 PM – 10 PM<span class="xs"><i>◆</i>Private Party Room</span></a>
 <nav class="gut"><div class="in">
  <a class="brand" href="#top" aria-label="Videsi Bar & Grill home"><i class="logo" role="img" aria-label="Videsi logo"></i><span>VIDESI</span></a>
- <div class="links"><a href="#story">Our Story</a><a href="#journey">Chef</a><a href="#menu">Menu</a><a href="#catering">Catering</a><a href="#inquire">Inquire</a><a href="#visit">Visit</a></div>
+ <div class="links"><a href="#story">Our Story</a><a href="#journey">Chef</a><a href="#menu">Menu</a><a href="#catering">Catering</a><a href="#inquire">Inquire</a><a href="#review">Review</a><a href="#visit">Visit</a></div>
  <a class="btn call-top solid" href="https://www.clover.com/online-ordering/GVS3J6RNJM581" target="_blank" rel="noopener">Order</a>
 </div></nav>
 
@@ -322,6 +336,27 @@ footer a{text-decoration:none;color:var(--gold2)}
   <p class="fnote">Prefer to talk? Call <a href="tel:+17093417937">709-341-7937</a> or email <a href="mailto:videsibargrill@gmail.com">videsibargrill@gmail.com</a></p>
  </form>
 </div></section>
+<section id="review" class="review gut"><div class="in">
+ <div class="eyebrow">Your Feedback</div>
+ <h2>How Was Your Meal?</h2>
+ <div class="orn">◆</div>
+ <div class="rv-ask" id="rvAsk">
+  <a class="rv-c" href="https://g.page/r/CcLypuDpGYvBEAE/review" target="_blank" rel="noopener"><span>😍</span>Loved it</a>
+  <a class="rv-c" href="https://g.page/r/CcLypuDpGYvBEAE/review" target="_blank" rel="noopener"><span>🙂</span>It was good</a>
+  <button type="button" class="rv-c" id="rvBad"><span>😕</span>Could be better</button>
+ </div>
+ <form class="rv-form" id="rvForm" hidden>
+  <p>Sorry to hear that. Tell us what we can do better. Our team reads every message.</p>
+  <textarea name="feedback" placeholder="What could we do better?" required></textarea>
+  <input name="name" placeholder="Your name (optional)">
+  <input name="contact" placeholder="Phone or email (optional)">
+  <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="display:none">
+  <button class="btn solid" type="submit">Send Feedback</button>
+  <a class="rv-g" href="https://g.page/r/CcLypuDpGYvBEAE/review" target="_blank" rel="noopener">Or leave a Google review</a>
+ </form>
+ <p class="rv-done" id="rvDone" hidden>Thank you! We received your feedback and will make it right. 🙏</p>
+</div></section>
+
 <section id="visit" class="visit gut"><div class="in">
  <div class="info">
   <div><div class="eyebrow">Visit Us</div><h2 style="font-size:clamp(36px,5vw,52px);margin-top:10px">Find Videsi</h2></div>
@@ -404,5 +439,8 @@ t.forEach(function(x,n){x.addEventListener('click',function(){show(n)})});
 b.querySelector('.jx').onclick=hide;b.querySelector('.jp').onclick=function(e){e.stopPropagation();show(i-1)};b.querySelector('.jn').onclick=function(e){e.stopPropagation();show(i+1)};
 b.addEventListener('click',function(e){if(e.target===b)hide()});
 document.addEventListener('keydown',function(e){if(b.hidden)return;if(e.key==='Escape')hide();if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1)});
-var sx=0;b.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(i+(d<0?1:-1))})})();</script></body>
+var sx=0;b.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(i+(d<0?1:-1))})})();</script><script>(function(){var b=document.getElementById('rvBad'),f=document.getElementById('rvForm'),a=document.getElementById('rvAsk'),d=document.getElementById('rvDone');if(!b)return;
+b.onclick=function(){a.hidden=true;a.style.display='none';f.hidden=false;f.querySelector('textarea').focus()};
+f.addEventListener('submit',function(e){e.preventDefault();if(f._honey.value)return;var s=f.querySelector('button');s.disabled=true;s.textContent='Sending...';
+fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Website Feedback – Videsi Bar & Grill',_template:'table',Feedback:f.feedback.value,Name:f.name.value||'-',Contact:f.contact.value||'-'})}).then(function(r){if(!r.ok)throw 0;f.hidden=true;d.hidden=false}).catch(function(){s.disabled=false;s.textContent='Send Feedback';alert('Could not send. Please try again.')})})})();</script></body>
 </html>
