@@ -185,6 +185,12 @@ footer a{text-decoration:none;color:var(--gold2)}
 .iform .btn{justify-self:center;cursor:pointer;font-family:var(--body)}
 .fnote{text-align:center;color:var(--muted);font-size:14px;margin:0}
 .fnote a{color:var(--gold2)}
+.rform{border:1px solid var(--line);padding:28px;background:linear-gradient(180deg,rgba(207,169,85,.06),transparent 60%)}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.rchips button{font:inherit;font-size:12px;letter-spacing:.08em;text-transform:none;color:var(--gold2);background:transparent;border:1px solid var(--line);padding:7px 12px;min-height:34px;cursor:pointer}
+.rchips button:hover,.rchips button.on{background:var(--gold);color:#0b1f15;border-color:var(--gold)}
+.rsum{margin:0;text-align:center;color:var(--gold2);font-size:15px;letter-spacing:.06em;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px}
+@media (max-width:640px){.rform{padding:18px}}
 .thanks{max-width:720px;margin:0 auto 24px;padding:16px;border:1px solid var(--gold);color:var(--gold2);text-align:center}
 @media (max-width:640px){.frow{grid-template-columns:1fr}}
 
@@ -254,7 +260,7 @@ footer a{text-decoration:none;color:var(--gold2)}
 <a class="nowopen" href="#visit"><b>Now Open</b><i>◆</i><span class="xs">Downtown Kitchener<i>◆</i></span>Daily 11:30 AM – 11:30 PM<span class="xs"><i>◆</i>Private Party Room</span></a>
 <nav class="gut"><div class="in">
  <a class="brand" href="#top" aria-label="Videsi Bar & Grill home"><i class="logo" role="img" aria-label="Videsi logo"></i><span>VIDESI</span></a>
- <div class="links"><a href="#story">Our Story</a><a href="#journey">Chef</a><a href="#menu">Menu</a><a href="#catering">Catering</a><a href="#inquire">Inquire</a><a href="#review">Review</a><a href="#visit">Visit</a></div>
+ <div class="links"><a href="#story">Our Story</a><a href="#journey">Chef</a><a href="#menu">Menu</a><a href="#reserve">Reserve</a><a href="#catering">Catering</a><a href="#inquire">Inquire</a><a href="#review">Review</a><a href="#visit">Visit</a></div>
  <a class="btn call-top solid" href="https://www.clover.com/online-ordering/GVS3J6RNJM581" target="_blank" rel="noopener">Order</a>
 </div></nav>
 
@@ -266,6 +272,7 @@ footer a{text-decoration:none;color:var(--gold2)}
   <p class="tag">Your stomach gets full… but your heart keeps craving more.</p>
   <div class="ctas">
    <a class="btn solid order" href="https://www.clover.com/online-ordering/GVS3J6RNJM581" target="_blank" rel="noopener">Order Takeout Online</a>
+   <a class="btn" href="#reserve">Reserve a Table</a>
    <a class="btn" href="#menu">View Menu</a>
    <a class="btn" href="tel:+17093417937">Call to Order</a>
    <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Videsi+Bar+%26+Grill+146+King+St+W+Kitchener" target="_blank" rel="noopener">Directions</a>
@@ -311,6 +318,36 @@ footer a{text-decoration:none;color:var(--gold2)}
 
 
 <div class="jbox" id="jbox" hidden><button type="button" class="jx" aria-label="Close">×</button><button type="button" class="jp" aria-label="Previous photo">‹</button><img alt=""><button type="button" class="jn" aria-label="Next photo">›</button></div>
+
+<section id="reserve" class="inquire gut"><div class="in">
+ <div class="head reveal"><div class="eyebrow">Dine In · Open Daily 11:30 AM – 11:30 PM</div><h2>Reserve a Table</h2><div class="orn">◆</div>
+ <p>Pick your date, time and party size. We'll call or text to confirm your table. For same-day tables, you can also call us at <a href="tel:+17093417937" style="color:var(--gold2)">709-341-7937</a>.</p></div>
+ <p class="thanks" id="rthanks" hidden>Thank you! Your table request has been sent. We'll call or text you shortly to confirm.</p>
+ <form class="iform rform reveal" id="rform" action="https://formsubmit.co/videsibargrill@gmail.com" method="POST">
+  <input type="hidden" name="_subject" value="New TABLE RESERVATION request - Videsi">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_next" value="https://videsibarandgrill.com/?reserved=1#reserve">
+  <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+  <input type="hidden" name="Request type" value="Table reservation">
+  <div class="frow">
+   <label>Your name *<input name="Name" required autocomplete="name"></label>
+   <label>Phone *<input name="Phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
+  </div>
+  <div class="frow">
+   <label>Date *<input name="Date" type="date" required id="rdate"><span class="rchips" id="rdchips"></span></label>
+   <label>Time *<select name="Time" required id="rtime"><option value="">Choose a time</option><option>11:30 AM</option><option>12:00 PM</option><option>12:30 PM</option><option>1:00 PM</option><option>1:30 PM</option><option>2:00 PM</option><option>2:30 PM</option><option>3:00 PM</option><option>3:30 PM</option><option>4:00 PM</option><option>4:30 PM</option><option>5:00 PM</option><option>5:30 PM</option><option>6:00 PM</option><option>6:30 PM</option><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option><option>9:30 PM</option><option>10:00 PM</option><option>10:30 PM</option></select></label>
+  </div>
+  <div class="frow">
+   <label>Number of guests *<input name="Guests" type="number" min="1" max="110" required inputmode="numeric" id="rguests"><span class="rchips" id="rgchips"><button type="button" data-g="2">2</button><button type="button" data-g="4">4</button><button type="button" data-g="6">6</button><button type="button" data-g="8">8</button><button type="button" data-g="10">10+</button></span></label>
+   <label>Occasion<select name="Occasion"><option>Just dining</option><option>Birthday</option><option>Anniversary</option><option>Family dinner</option><option>Business meal</option><option>Other</option></select></label>
+  </div>
+  <label>Email (optional)<input name="email" type="email" autocomplete="email"></label>
+  <label>Special requests (optional)<textarea name="Requests" rows="3" placeholder="High chair, allergies, seating preference..."></textarea></label>
+  <p class="rsum" id="rsum" hidden></p>
+  <button class="btn solid" type="submit">Request My Table</button>
+  <p class="fnote">Parties over 20 or private events? Use the <a href="#inquire">inquiry form</a> or call <a href="tel:+15192217262">519-221-7262</a>.</p>
+ </form>
+</div></section>
 
 <section id="catering" class="cater gut"><div class="in">
  <div class="eyebrow">Parties · Events · Office Lunches</div>
@@ -451,5 +488,16 @@ document.addEventListener('keydown',function(e){if(b.hidden)return;if(e.key==='E
 var sx=0;b.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});b.addEventListener('touchend',function(e){var d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>40)show(i+(d<0?1:-1))})})();</script><script>(function(){var b=document.getElementById('rvBad'),f=document.getElementById('rvForm'),a=document.getElementById('rvAsk'),d=document.getElementById('rvDone');if(!b)return;
 b.onclick=function(){a.hidden=true;a.style.display='none';f.hidden=false;f.querySelector('textarea').focus()};
 f.addEventListener('submit',function(e){e.preventDefault();if(f._honey.value)return;var s=f.querySelector('button');s.disabled=true;s.textContent='Sending...';
-fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Website Feedback – Videsi Bar & Grill',_template:'table',Feedback:f.feedback.value,Name:f.name.value||'-',Contact:f.contact.value||'-'})}).then(function(r){if(!r.ok)throw 0;f.hidden=true;d.hidden=false}).catch(function(){s.disabled=false;s.textContent='Send Feedback';alert('Could not send. Please try again.')})})})();</script><script>(function(){var v=document.getElementById('vin'),b=document.getElementById('vsnd');if(!v||!b)return;b.onclick=function(){v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.play()}b.textContent=v.muted?'🔇 Tap for sound':'🔊 Sound on';b.setAttribute('aria-label',v.muted?'Turn sound on':'Turn sound off')}})();</script><script>(function(){var f=document.querySelector('form.iform'),t=document.getElementById('thanks');if(!f||!window.fetch)return;f.addEventListener('submit',function(e){e.preventDefault();if(f._honey&&f._honey.value)return;var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Sending...';var o={};new FormData(f).forEach(function(v,k){if(k!=='_next'&&k!=='_honey')o[k]=v});fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(o)}).then(function(r){return r.json().then(function(j){if(!r.ok||String(j.success)!=='true')throw 0})}).then(function(){f.hidden=true;f.style.display="none";if(t){t.hidden=false;t.scrollIntoView({behavior:'smooth',block:'center'})}}).catch(function(){HTMLFormElement.prototype.submit.call(f)})})})();</script></body>
+fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Website Feedback – Videsi Bar & Grill',_template:'table',Feedback:f.feedback.value,Name:f.name.value||'-',Contact:f.contact.value||'-'})}).then(function(r){if(!r.ok)throw 0;f.hidden=true;d.hidden=false}).catch(function(){s.disabled=false;s.textContent='Send Feedback';alert('Could not send. Please try again.')})})})();</script><script>(function(){var v=document.getElementById('vin'),b=document.getElementById('vsnd');if(!v||!b)return;b.onclick=function(){v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.play()}b.textContent=v.muted?'🔇 Tap for sound':'🔊 Sound on';b.setAttribute('aria-label',v.muted?'Turn sound on':'Turn sound off')}})();</script><script>(function(){var f=document.querySelector('#inquire form.iform'),t=document.getElementById('thanks');if(!f||!window.fetch)return;f.addEventListener('submit',function(e){e.preventDefault();if(f._honey&&f._honey.value)return;var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Sending...';var o={};new FormData(f).forEach(function(v,k){if(k!=='_next'&&k!=='_honey')o[k]=v});fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(o)}).then(function(r){return r.json().then(function(j){if(!r.ok||String(j.success)!=='true')throw 0})}).then(function(){f.hidden=true;f.style.display="none";if(t){t.hidden=false;t.scrollIntoView({behavior:'smooth',block:'center'})}}).catch(function(){HTMLFormElement.prototype.submit.call(f)})})})();</script><script>(function(){var f=document.getElementById('rform'),t=document.getElementById('rthanks'),d=document.getElementById('rdate');if(!f)return;try{var n=new Date(),z=new Date(n.getTime()-n.getTimezoneOffset()*6e4).toISOString().slice(0,10);d.min=z}catch(e){}if(!window.fetch)return;f.addEventListener('submit',function(e){e.preventDefault();if(f._honey&&f._honey.value)return;var b=f.querySelector('button[type=submit]');b.disabled=true;b.textContent='Sending...';var o={};new FormData(f).forEach(function(v,k){if(k!=='_next'&&k!=='_honey')o[k]=v});fetch('https://formsubmit.co/ajax/videsibargrill@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(o)}).then(function(r){return r.json().then(function(j){if(!r.ok||String(j.success)!=='true')throw 0})}).then(function(){f.hidden=true;f.style.display='none';if(t){t.hidden=false;t.scrollIntoView({behavior:'smooth',block:'center'})}}).catch(function(){HTMLFormElement.prototype.submit.call(f)})})})();</script><script>(function(){var d=document.getElementById('rdate'),tm=document.getElementById('rtime'),g=document.getElementById('rguests'),sum=document.getElementById('rsum'),dc=document.getElementById('rdchips'),gc=document.getElementById('rgchips');if(!d)return;
+function iso(x){return new Date(x.getTime()-x.getTimezoneOffset()*6e4).toISOString().slice(0,10)}
+function mins(t){var m=t.match(/(\d+):(\d+) (AM|PM)/);if(!m)return 0;var h=+m[1]%12;if(m[3]=='PM')h+=12;return h*60+ +m[2]}
+var now=new Date(),days=[['Today',0],['Tomorrow',1]];var dow=now.getDay();var toFri=(5-dow+7)%7,toSat=(6-dow+7)%7;if(toFri>1)days.push(['Fri',toFri]);if(toSat>1)days.push(['Sat',toSat]);
+days.forEach(function(x){var b=document.createElement('button');b.type='button';b.textContent=x[0];b.onclick=function(){var t=new Date();t.setDate(t.getDate()+x[1]);d.value=iso(t);upd()};dc.appendChild(b)});
+gc.querySelectorAll('button').forEach(function(b){b.onclick=function(){g.value=b.dataset.g;upd()}});
+function upd(){var today=d.value===iso(new Date()),cur=new Date(),cm=cur.getHours()*60+cur.getMinutes()+30;
+[].forEach.call(tm.options,function(o){if(!o.value)return;o.disabled=today&&mins(o.value)<cm});if(tm.selectedOptions[0]&&tm.selectedOptions[0].disabled)tm.value='';
+[].forEach.call(dc.children,function(b,i){var t=new Date();t.setDate(t.getDate()+days[i][1]);b.classList.toggle('on',d.value===iso(t))});
+[].forEach.call(gc.children,function(b){b.classList.toggle('on',g.value===b.dataset.g)});
+if(d.value&&tm.value&&g.value){var dt=new Date(d.value+'T12:00');sum.textContent='Table for '+g.value+' \u00b7 '+dt.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'})+' \u00b7 '+tm.value;sum.hidden=false}else sum.hidden=true}
+d.addEventListener('change',upd);tm.addEventListener('change',upd);g.addEventListener('input',upd);upd()})();</script></body>
 </html>
