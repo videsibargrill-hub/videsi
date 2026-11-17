@@ -265,6 +265,8 @@ footer a{text-decoration:none;color:var(--gold2)}
 .faq h2{font-size:clamp(34px,5vw,48px);margin:10px 0 0;text-align:center}.faq .head{text-align:center;margin-bottom:26px}
 .faq details{border-bottom:1px solid var(--line);padding:18px 4px}.faq summary{cursor:pointer;color:var(--ink);font-size:18px;list-style-position:outside}
 .faq details p{color:var(--muted);margin:12px 0 0;line-height:1.7}.faq .in{max-width:820px}
+.fab{opacity:0;pointer-events:none;transform:translateY(12px);transition:opacity .25s,transform .25s}.fab.show{opacity:1;pointer-events:auto;transform:none}
+.holiday{text-align:center;padding-top:56px;padding-bottom:56px;background:radial-gradient(ellipse 60% 80% at 50% 0%,rgba(207,169,85,.16),transparent 70%),var(--bg2);border-bottom:1px solid var(--line)}.holiday h2{font-size:clamp(30px,4.5vw,44px);margin:10px 0 0}.holiday p{color:var(--muted);max-width:62ch;margin:14px auto 22px}.holiday .ctas{justify-content:center}
 </style>
 
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Where is Videsi Bar & Grill?", "acceptedAnswer": {"@type": "Answer", "text": "We are at 146 King St W in downtown Kitchener, ON N2G 1A6, steps from Kitchener City Hall."}}, {"@type": "Question", "name": "What are your hours?", "acceptedAnswer": {"@type": "Answer", "text": "We are open every day from 11:30 AM to 11:30 PM for dine in and takeout."}}, {"@type": "Question", "name": "Is there parking near the restaurant?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. There are over 300 free 2-hour street parking spots downtown, most city lots are free after 5 PM and all weekend, and the City Hall garage at 200 King St W is just steps away."}}, {"@type": "Question", "name": "Do you have vegetarian options?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. A large part of our menu is vegetarian, including paneer dishes, dal, matka curries, chaat and Desi Chinese favourites. Use the vegetarian filter on our menu to see them all."}}, {"@type": "Question", "name": "What kind of food do you serve?", "acceptedAnswer": {"@type": "Answer", "text": "Authentic Punjabi food, Indian fusion and Desi Chinese (Indo-Chinese), including Matka Biryani, Paneer Angara, tandoori dishes, fresh naan, Manchurian and Hakka noodles."}}, {"@type": "Question", "name": "Can I order takeout online?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Order online, pay ahead and pick up your food hot from 146 King St W."}}, {"@type": "Question", "name": "Do you take reservations?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Reserve a table on this page and we will call or text to confirm. For parties over 20 or private events, use our inquiry form."}}, {"@type": "Question", "name": "Do you offer catering and private parties?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Our large production kitchen caters everything from birthdays and office lunches to weddings and community events of 100 to 2,000+ guests across Kitchener, Waterloo and Cambridge. We also have a private party and meeting room for 12 to 25 guests, bookable in advance."}}, {"@type": "Question", "name": "Can you make dishes lighter?", "acceptedAnswer": {"@type": "Answer", "text": "Many of our Punjabi dishes are traditionally finished with pure desi ghee. Just ask your server and we can prepare any dish with less ghee."}}]}</script>
@@ -296,6 +298,13 @@ footer a{text-decoration:none;color:var(--gold2)}
 </div></header>
 
 <div class="strip gut"><div class="in"><span class="sg"><span>Dine In</span><b>◆</b><span>Takeout</span><b>◆</b><span>Catering</span></span><b class="sd">◆</b><span>Open Daily 11:30 AM – 11:30 PM</span></div></div>
+
+<section class="holiday gut"><div class="in">
+ <div class="eyebrow">Holiday Season 2026</div>
+ <h2>Book Your Holiday Party at Videsi</h2>
+ <p>Office parties, family get-togethers and year-end celebrations in downtown Kitchener. Book our private room for 12–25 guests at $50 per hour, the whole restaurant for up to 110 guests, or Indian catering for 100–2,000+ guests. December dates fill up fast.</p>
+ <div class="ctas"><a class="btn solid" href="/party-room.html">Book a Holiday Party</a><a class="btn" href="/catering.html">Holiday Catering</a></div>
+</div></section>
 
 <section id="story" class="story gut"><div class="in">
  <figure class="chefpic"><img src="journey/chef-akash.webp?v=4" alt="Chef Akash Patel, Head Chef of Videsi Bar &amp; Grill" width="720" height="900" loading="lazy"><figcaption>Chef Akash Patel<small>Head Chef · 17 years in five-star hospitality</small></figcaption></figure>
@@ -359,7 +368,7 @@ footer a{text-decoration:none;color:var(--gold2)}
   <label>Special requests (optional)<textarea name="Requests" rows="3" placeholder="High chair, allergies, seating preference..."></textarea></label>
   <p class="rsum" id="rsum" hidden></p>
   <button class="btn solid" type="submit">Request My Table</button>
-  <p class="fnote">Parties over 20 or private events? Use the <a href="#inquire">inquiry form</a> or call <a href="tel:+15192217262">519-221-7262</a>.</p>
+  <p class="fnote">Parties over 20 or private events? Use the <a href="#inquire">inquiry form</a> or call <a href="tel:+17093417937">709-341-7937</a>.</p>
  </form>
 </div></section>
 
@@ -368,7 +377,7 @@ footer a{text-decoration:none;color:var(--gold2)}
  <h2 style="font-size:clamp(36px,5vw,52px);margin-top:10px">Catering by Videsi</h2>
  <div class="orn">◆</div>
  <p style="color:var(--muted);max-width:56ch;margin:18px auto 0">From birthdays and family functions to corporate lunches, we bring the full Videsi menu to your event. Call us to plan your menu.</p><div class="book reveal" id="caterbook" data-pages='["videsi-catering-p1.webp", "videsi-catering-p2.webp"]' data-title="Videsi catering menu"><div class="stage" tabindex="0" aria-roledescription="flipbook" aria-label="Videsi catering menu. Swipe or use the arrows to turn pages."><img class="pg" src="videsi-catering-p1.webp" alt="Videsi catering menu, page 1" width="1360" height="1760" loading="lazy"></div><div class="bctl"><button type="button" class="bprev" aria-label="Previous page">‹</button><span class="bcount" aria-live="polite">1 / 2</span><button type="button" class="bnext" aria-label="Next page">›</button></div><p class="bhint">Swipe or tap the arrows to turn pages · <a class="bfull" href="videsi-catering-p1.webp" target="_blank" rel="noopener">Open page full size</a></p></div>
- <a class="btn solid" href="tel:+15192217262">Call for Catering</a> <a class="btn" href="/catering.html">Catering Details</a> <a class="btn" href="/party-room.html">Private Party &amp; Meeting Room</a>
+ <a class="btn solid" href="tel:+17093417937">Call for Catering</a> <a class="btn" href="/catering.html">Catering Details</a> <a class="btn" href="/party-room.html">Private Party &amp; Meeting Room</a> <a class="btn" href="/wedding-catering.html">Wedding Catering</a>
 </div></section>
 
 <section id="inquire" class="inquire gut"><div class="in">
@@ -437,14 +446,14 @@ footer a{text-decoration:none;color:var(--gold2)}
   <div><div class="eyebrow">Visit Us</div><h2 style="font-size:clamp(36px,5vw,52px);margin-top:10px">Find Videsi</h2></div>
   <div><h3>Address</h3><p><a href="https://www.google.com/maps/search/?api=1&amp;query=Videsi+Bar+%26+Grill+146+King+St+W+Kitchener" target="_blank" rel="noopener">146 King Street West<br>Kitchener, ON N2G 1A6<br>Canada</a></p></div>
   <div><h3>Hours</h3><p>Open every day<br><span style="color:var(--ink)">11:30 AM – 11:30 PM</span></p></div>
-  <div><h3>Call to Order</h3><p><a href="tel:+17093417937">709-341-7937</a><br><a href="tel:+15192217262">519-221-7262</a><br><a href="tel:+16476153444">647-615-3444</a></p></div>
+  <div><h3>Call to Order</h3><p><a href="tel:+17093417937">709-341-7937</a></p></div>
   <div><h3>Parking</h3><p>Over 300 free 2-hour street parking spots downtown. Most city lots are free after 5 PM and all weekend, and the City Hall garage (200 King St W) is just steps away.</p></div>
  </div>
  <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Videsi+Bar+%26+Grill+146+King+St+W+Kitchener" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;text-decoration:none;padding:32px;background:radial-gradient(circle at 50% 40%,rgba(207,169,85,.14),transparent 65%),var(--card)"><i class="logo" style="width:120px;height:125px"></i><span style="font-family:var(--display);font-size:30px;color:var(--ink)">146 King Street West</span><span style="color:var(--muted)">Downtown Kitchener, ON N2G 1A6, Canada</span><span class="btn solid">Open in Google Maps</span></a>
 </div></section>
 
 <footer class="gut">
- <div class="fl"><a href="https://www.instagram.com/videsibarandgrillkitchener" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/share/1CSkyRgpWh/" target="_blank" rel="noopener">Facebook</a><a href="#menu">Menu</a><a href="/catering.html">Catering</a><a href="/party-room.html">Private Party Room</a><a href="https://www.clover.com/online-ordering/GVS3J6RNJM581" target="_blank" rel="noopener">Order Online</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Videsi+Bar+%26+Grill+146+King+St+W+Kitchener" target="_blank" rel="noopener">Directions</a></div>
+ <div class="fl"><a href="https://www.instagram.com/videsibarandgrillkitchener" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/share/1CSkyRgpWh/" target="_blank" rel="noopener">Facebook</a><a href="#menu">Menu</a><a href="/catering.html">Catering</a><a href="/party-room.html">Private Party Room</a><a href="/wedding-catering.html">Wedding Catering</a><a href="https://www.clover.com/online-ordering/GVS3J6RNJM581" target="_blank" rel="noopener">Order Online</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Videsi+Bar+%26+Grill+146+King+St+W+Kitchener" target="_blank" rel="noopener">Directions</a></div>
  <div>© Videsi Bar &amp; Grill · 146 King St W, Kitchener, ON N2G 1A6, Canada</div>
 </footer>
 
@@ -528,5 +537,6 @@ function upd(){var today=d.value===iso(new Date()),cur=new Date(),cm=cur.getHour
 [].forEach.call(dc.children,function(b,i){var t=new Date();t.setDate(t.getDate()+days[i][1]);b.classList.toggle('on',d.value===iso(t))});
 [].forEach.call(gc.children,function(b){b.classList.toggle('on',g.value===b.dataset.g)});
 if(d.value&&tm.value&&g.value){var dt=new Date(d.value+'T12:00');sum.textContent='Table for '+g.value+' \u00b7 '+dt.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'})+' \u00b7 '+tm.value;sum.hidden=false}else sum.hidden=true}
-d.addEventListener('change',upd);tm.addEventListener('change',upd);g.addEventListener('input',upd);upd()})();</script></body>
+d.addEventListener('change',upd);tm.addEventListener('change',upd);g.addEventListener('input',upd);upd()})();</script><script>(function(){var f=document.querySelector(".fab");if(!f)return;var h=document.querySelector("header");function u(){var y=h?h.getBoundingClientRect().bottom:300;f.classList.toggle("show",y<60)}addEventListener("scroll",u,{passive:true});u()})();</script>
+</body>
 </html>
