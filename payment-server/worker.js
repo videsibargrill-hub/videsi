@@ -64,11 +64,7 @@ export default {
     const payload = {
       customer: { firstName: first, lastName: rest.join(' ') || '-', email, phoneNumber: phone },
       shoppingCart: { lineItems },
-      redirectUrls: {
-        success: site + '/order.html?paid=1',
-        failure: site + '/order.html?payfail=1',
-        cancel: site + '/order.html',
-      },
+      // Return pages (paid / failed / cancel) are set in Clover Dashboard → Hosted checkout
     };
 
     const r = await fetch((env.CLOVER_API || 'https://api.clover.com') + '/invoicingcheckoutservice/v1/checkouts', {
