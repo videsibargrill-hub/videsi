@@ -15,12 +15,12 @@
 <style>
 :root{--bg:#0b1f15;--bg2:#0f2a1c;--card:#12301f;--ink:#f1ead8;--muted:#b9bfae;--gold:#cfa955;--gold2:#e8cf8e;--line:rgba(207,169,85,.28);
 --display:"Cormorant Garamond",Georgia,serif;--body:"Jost",system-ui,sans-serif;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:120px}
+*{box-sizing:border-box}html{scroll-padding-top:120px;overflow-anchor:none}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:300;font-size:16px;line-height:1.5}
 a{color:inherit}img{display:block;max-width:100%}
 .gut{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
 .in{max-width:1180px;margin:0 auto}
-header.top{position:sticky;top:0;z-index:20;background:rgba(11,31,21,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top{position:sticky;top:0;z-index:20;background:#0b1f15;transform:translateZ(0);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;height:60px}
 .brand{font-family:var(--display);font-size:26px;letter-spacing:.18em;color:var(--gold2);text-decoration:none;font-weight:600}
 .brand small{display:block;font-family:var(--body);font-size:10px;letter-spacing:.3em;color:var(--muted);font-weight:400}
@@ -108,7 +108,7 @@ footer a{color:var(--gold2)}
    s.classList.toggle('hide',!!v&&!s.querySelector('.it:not(.hide)'))});
  });
  var chips=[].slice.call(document.querySelectorAll('.chips a'));
- if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){chips.forEach(function(c){var on=c.getAttribute('href')==='#'+e.target.id;c.classList.toggle('on',on);if(on){var b=c.closest('.chips');if(b)b.scrollLeft=c.offsetLeft-b.offsetLeft-(b.clientWidth-c.offsetWidth)/2}})}})},{rootMargin:'-130px 0px -70% 0px'});secs.forEach(function(s){io.observe(s)})}
+ if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting&&e.target.id!==window.__vcur){window.__vcur=e.target.id;chips.forEach(function(c){var on=c.getAttribute('href')==='#'+e.target.id;c.classList.toggle('on',on);if(on){var b=c.closest('.chips');if(b)b.scrollLeft=c.offsetLeft-b.offsetLeft-(b.clientWidth-c.offsetWidth)/2}})}})},{rootMargin:'-130px 0px -70% 0px'});secs.forEach(function(s){io.observe(s)})}
 })();
 </script>
 </body>
