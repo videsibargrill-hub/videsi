@@ -108,7 +108,7 @@ footer a{color:var(--gold2)}
    s.classList.toggle('hide',!!v&&!s.querySelector('.it:not(.hide)'))});
  });
  var chips=[].slice.call(document.querySelectorAll('.chips a'));
- if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){chips.forEach(function(c){var on=c.getAttribute('href')==='#'+e.target.id;c.classList.toggle('on',on);if(on)c.scrollIntoView({inline:'center',block:'nearest'})})}})},{rootMargin:'-130px 0px -70% 0px'});secs.forEach(function(s){io.observe(s)})}
+ if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){chips.forEach(function(c){var on=c.getAttribute('href')==='#'+e.target.id;c.classList.toggle('on',on);if(on){var b=c.closest('.chips');if(b)b.scrollLeft=c.offsetLeft-b.offsetLeft-(b.clientWidth-c.offsetWidth)/2}})}})},{rootMargin:'-130px 0px -70% 0px'});secs.forEach(function(s){io.observe(s)})}
 })();
 </script>
 </body>
