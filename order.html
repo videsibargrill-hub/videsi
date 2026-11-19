@@ -83,6 +83,24 @@ footer a{color:var(--gold2)}
 #cart .err{color:#ff8a7a;font-size:14px;margin-top:8px;min-height:1em}
 #cart pre{white-space:pre-wrap;background:rgba(255,255,255,.06);border-radius:10px;padding:12px;font-size:14px;font-family:inherit}
 #cart .empty{padding:30px 0;text-align:center;opacity:.75}
+
+#cart .steps2{display:flex;align-items:center;justify-content:space-between;margin:4px 0 16px;position:relative}
+#cart .steps2:before{content:"";position:absolute;left:18px;right:18px;top:50%;height:3px;background:rgba(201,162,74,.3);z-index:0}
+#cart .steps2 span{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--bg);border:2px solid rgba(201,162,74,.4)}
+#cart .steps2 span.on{background:var(--gold);border-color:var(--gold)}
+#cart .tips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+#cart .tips button{flex:1;min-width:56px;padding:10px 4px;border-radius:10px;border:1px solid var(--gold);background:none;color:var(--gold2);font:inherit;font-size:14px;cursor:pointer}
+#cart .tips button.on{background:var(--gold);color:#1a1405}
+#cart .row2{display:flex;justify-content:space-between;padding:4px 0;font-size:15px}
+#cart .row2.big{font-size:19px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12);margin-top:6px}
+#cart .pay{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:15px 16px;border-radius:12px;border:0;font:inherit;font-size:16px;font-weight:500;cursor:pointer;text-align:left}
+#cart .pay.online{background:#111;color:#fff;border:1px solid rgba(255,255,255,.25)}
+#cart .pay.card{background:#b3261e;color:#fff}
+#cart .pay.cash{background:#b3261e;color:#fff}
+#cart .pay[disabled]{opacity:.45;cursor:not-allowed}
+#cart h3.sub{font-weight:400;font-size:20px;margin:6px 0 8px}
+#cart .back{background:none;border:0;color:var(--gold2);font:inherit;font-size:14px;cursor:pointer;padding:10px 0 0}
+#cart .addr{text-align:center;opacity:.75;font-size:13px;margin-top:14px}
 </style>
 </head>
 <body>
@@ -116,35 +134,56 @@ footer a{color:var(--gold2)}
 
 <div id="cart" aria-hidden="true"><div class="sh" data-close></div><div class="pn" role="dialog" aria-modal="true" aria-labelledby="cartttl">
  <h2><span id="cartttl">Your Order</span><button class="x" type="button" data-close aria-label="Close">×</button></h2>
- <div id="cstep1">
+ <div class="steps2" aria-hidden="true"><span data-s="1">🛒</span><span data-s="2">🪪</span><span data-s="3">🕒</span><span data-s="4">💳</span><span data-s="5">✓</span></div>
+ <section data-step="1">
   <div id="clines"></div>
-  <div id="cform">
-   <div class="tot"><span>Subtotal</span><b id="csub">$0.00</b></div>
-   <div class="muted">+ 13% HST. You pay at pickup — cash or card.</div>
-   <label for="cname">Your name *</label><input id="cname" autocomplete="name" required>
-   <label for="cphone">Your phone number *</label><input id="cphone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="519-555-1234">
-   <label for="ctime">Pickup time</label><select id="ctime"></select>
-   <label for="cnote">Notes (spice level, allergies…)</label><textarea id="cnote" rows="2"></textarea>
-   <button class="btn solid go" type="button" id="csend">📱 Send Order by Text</button>
-   <div class="err" id="cerr" role="alert"></div>
-   <div class="muted">Your phone's text app opens with the order filled in — just tap Send. We'll text you back to confirm.</div>
-   <a class="btn go" href="https://www.clover.com/online-ordering/videsi-bar-and-grill-kitchener" target="_blank" rel="noopener">💳 Prefer to pay online now? Order on Clover</a>
-  </div>
- </div>
- <div id="cstep2" hidden>
-  <p><b>Almost done!</b> <span id="cdone"></span></p>
+  <div id="c1foot"><div class="row2"><span>Subtotal</span><b id="csub">$0.00</b></div>
+  <div class="muted">Pickup from 146 King St W · approx. 20 min</div>
+  <button class="btn solid go" type="button" data-next="2">Continue</button></div>
+ </section>
+ <section data-step="2" hidden>
+  <h3 class="sub">Your details</h3>
+  <label for="cname">Name *</label><input id="cname" autocomplete="name">
+  <label for="cphone">Phone *</label><input id="cphone" type="tel" autocomplete="tel" inputmode="tel" placeholder="519-555-1234">
+  <label for="cemail">Email (for your receipt)</label><input id="cemail" type="email" autocomplete="email">
+  <label for="cnote">Notes (spice level, allergies…)</label><textarea id="cnote" rows="2"></textarea>
+  <div class="err" id="cerr2" role="alert"></div>
+  <button class="btn solid go" type="button" data-next="3">Continue</button><button class="back" type="button" data-next="1">‹ Back to cart</button>
+ </section>
+ <section data-step="3" hidden>
+  <h3 class="sub">When would you like to pick up?</h3>
+  <select id="ctime"></select>
+  <div class="muted" id="cclosed"></div>
+  <button class="btn solid go" type="button" data-next="4">Continue</button><button class="back" type="button" data-next="2">‹ Back</button>
+ </section>
+ <section data-step="4" hidden>
+  <h3 class="sub">How would you like to pay?</h3>
+  <label>Add a tip for the kitchen</label>
+  <div class="tips" id="ctips"><button type="button" data-t="0">No tip</button><button type="button" data-t="10">10%</button><button type="button" data-t="12">12%</button><button type="button" data-t="15">15%</button><button type="button" data-t="18">18%</button></div>
+  <div style="margin-top:12px"><div class="row2"><span>Subtotal</span><span id="psub"></span></div><div class="row2"><span>HST (13%)</span><span id="ptax"></span></div><div class="row2"><span>Tip</span><span id="ptip"></span></div><div class="row2 big"><b>Total</b><b id="ptot"></b></div></div>
+  <button class="pay online" type="button" id="payonline">💳 Pay online now — Card / Apple Pay / Google Pay</button>
+  <div class="muted" id="payonlinenote"></div>
+  <button class="pay card" type="button" data-pay="Credit/Debit in person">💳 Credit/Debit in person</button>
+  <button class="pay cash" type="button" data-pay="Cash">💵 Cash</button>
+  <div class="err" id="cerr4" role="alert"></div>
+  <button class="back" type="button" data-next="3">‹ Back</button>
+  <div class="addr">Videsi Bar &amp; Grill · 146 King St W, Kitchener, ON N2G 1A6</div>
+ </section>
+ <section data-step="5" hidden>
+  <h3 class="sub" id="donettl">Almost done!</h3>
+  <p id="cdone"></p>
   <pre id="cmsg"></pre>
+  <a class="btn solid go" id="cresend" href="#">📱 Send order by text</a>
   <button class="btn go" type="button" id="ccopy">Copy order</button>
-  <a class="btn go" id="cresend" href="#">📱 Open text app again</a>
-  <a class="btn go" href="tel:+17093417937">📞 Call to order instead</a>
-  <button class="btn solid go" type="button" id="cnew">Start a new order</button>
- </div>
+  <a class="btn go" href="tel:+17093417937">📞 Call us</a>
+  <button class="btn go" type="button" id="cnew">Start a new order</button>
+ </section>
 </div></div>
 <script>
 (function(){
- var ORDER_SMS='+17093417937', TAX=0.13, KEY='videsiCart';
+ var ORDER_SMS='+17093417937', PAY_API='', TAX=0.13, KEY='videsiCart';
  var cart={}; try{cart=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
- var tip=document.getElementById('tip'),t,$=function(i){return document.getElementById(i)};
+ var tip=document.getElementById('tip'),t,$=function(i){return document.getElementById(i)},tipPct=12,step=1,last='';
  function save(){try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}}
  function money(x){return '$'+x.toFixed(2)}
  function count(){var n=0;for(var k in cart)n+=cart[k].q;return n}
@@ -154,19 +193,36 @@ footer a{color:var(--gold2)}
   [].forEach.call(document.querySelectorAll('a.add'),function(a){var c=cart[a.dataset.name];a.classList.toggle('done',!!c);a.textContent=c?('In cart ('+c.q+') +'):'Add +'})}
  function render(){
   var keys=Object.keys(cart),L=$('clines');
-  if(!keys.length){L.innerHTML='<div class="empty">Your cart is empty.<br>Tap “Add +” on any dish.</div>';$('cform').hidden=true}
-  else{$('cform').hidden=false;L.innerHTML=keys.map(function(k){var i=cart[k];return '<div class="ln"><div class="nm">'+esc(k)+'<small>'+money(i.p)+' each</small></div><div class="q"><button type="button" data-d="-1" data-k="'+esc(k)+'" aria-label="Remove one">−</button><b>'+i.q+'</b><button type="button" data-d="1" data-k="'+esc(k)+'" aria-label="Add one">+</button></div></div>'}).join('');}
-  $('csub').textContent=money(sub()); badge();
+  if(!keys.length){L.innerHTML='<div class="empty">Your cart is empty.<br>Tap “Add +” on any dish.</div>';$('c1foot').hidden=true}
+  else{$('c1foot').hidden=false;L.innerHTML=keys.map(function(k){var i=cart[k];return '<div class="ln"><div class="nm">'+esc(k)+'<small>'+money(i.p)+' each</small></div><div class="q"><button type="button" data-d="-1" data-k="'+esc(k)+'" aria-label="Remove one">−</button><b>'+i.q+'</b><button type="button" data-d="1" data-k="'+esc(k)+'" aria-label="Add one">+</button></div></div>'}).join('');}
+  $('csub').textContent=money(sub()); badge(); totals();
  }
+ function totals(){var s=sub(),tx=s*TAX,tp=s*tipPct/100;$('psub').textContent=money(s);$('ptax').textContent=money(tx);$('ptip').textContent=money(tp)+(tipPct?' ('+tipPct+'%)':'');$('ptot').textContent=money(s+tx+tp);
+  [].forEach.call(document.querySelectorAll('#ctips button'),function(b){b.classList.toggle('on',+b.dataset.t===tipPct)})}
  function times(){
-  var s=$('ctime'),now=new Date(),o=['<option>ASAP (about 20–25 min)</option>'],d=new Date(now.getTime()+30*60000);
+  var s=$('ctime'),now=new Date(),o=[],h=now.getHours(),open=h>=12;
+  if(open)o.push('<option>ASAP (about 20–25 min)</option>');
+  var d=new Date(now.getTime()+30*60000); if(!open){d=new Date(now);d.setHours(12,15,0,0)}
   d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);
-  for(var i=0;i<16;i++){var h=d.getHours();if(h>=12){o.push('<option>'+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'</option>')}d=new Date(d.getTime()+15*60000);if(d.getHours()===0&&d.getMinutes()>0)break}
-  s.innerHTML=o.join('');
+  for(var i=0;i<40;i++){if(d.getHours()>=12&&d.getDate()===(open?now.getDate():d.getDate()))o.push('<option>'+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'</option>');d=new Date(d.getTime()+15*60000);if(d.getHours()===0)break}
+  s.innerHTML=o.join('');$('cclosed').textContent=open?'':'We open at 12 PM — choose a pickup time from noon.';
  }
- function open(){render();times();$('cart').classList.add('open');$('cart').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
+ function go(n){
+  if(n>=2&&!count())return;
+  if(n>=3&&step===2){var nm=$('cname').value.trim(),ph=$('cphone').value.replace(/\D/g,'');
+   if(!nm){$('cerr2').textContent='Please enter your name.';$('cname').focus();return}
+   if(ph.length<10){$('cerr2').textContent='Please enter a 10-digit phone number.';$('cphone').focus();return}
+   var em=$('cemail').value.trim(); if(em&&!/^\S+@\S+\.\S+$/.test(em)){$('cerr2').textContent='Please check your email address.';return}
+   $('cerr2').textContent='';}
+  if(n===3)times(); if(n===4)totals();
+  step=n;[].forEach.call(document.querySelectorAll('#cart section'),function(s){s.hidden=+s.dataset.step!==n});
+  [].forEach.call(document.querySelectorAll('#cart .steps2 span'),function(s){s.classList.toggle('on',+s.dataset.s<=n)});
+  document.querySelector('#cart .pn').scrollTop=0;
+ }
+ function open(){render();go(step>4?1:step);$('cart').classList.add('open');$('cart').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
  function close(){$('cart').classList.remove('open');$('cart').setAttribute('aria-hidden','true');document.body.style.overflow=''}
  function smsLink(body){return 'sms:'+ORDER_SMS+(/iPhone|iPad|iPod|Mac/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(body)}
+ function details(){return {name:$('cname').value.trim(),phone:$('cphone').value.trim(),email:$('cemail').value.trim(),pickup:$('ctime').value,notes:$('cnote').value.trim()}}
  document.addEventListener('click',function(ev){
   var a=ev.target.closest('a.add');
   if(a){ev.preventDefault();var k=a.dataset.name;cart[k]=cart[k]||{p:parseFloat(a.dataset.price),q:0};cart[k].q++;save();badge();
@@ -175,26 +231,36 @@ footer a{color:var(--gold2)}
   if(ev.target.closest('[data-close]')){close();return}
   var b=ev.target.closest('#cart .q button');
   if(b){var k2=b.dataset.k;cart[k2].q+=+b.dataset.d;if(cart[k2].q<=0)delete cart[k2];save();render();return}
+  var nx=ev.target.closest('#cart [data-next]'); if(nx){go(+nx.dataset.next);return}
+  var tb=ev.target.closest('#ctips button'); if(tb){tipPct=+tb.dataset.t;totals();return}
+  var pb=ev.target.closest('#cart [data-pay]'); if(pb){inPerson(pb.dataset.pay);return}
  });
  document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
- var last='';
- $('csend').addEventListener('click',function(){
-  var nm=$('cname').value.trim(),ph=$('cphone').value.trim(),err=$('cerr');
-  if(!count()){err.textContent='Your cart is empty.';return}
-  if(!nm){err.textContent='Please enter your name.';$('cname').focus();return}
-  if(ph.replace(/\D/g,'').length<10){err.textContent='Please enter a 10-digit phone number.';$('cphone').focus();return}
-  err.textContent='';
-  var id='V'+Math.floor(1000+Math.random()*9000),s=sub();
+ function inPerson(method){
+  var d=details(),id='V'+Math.floor(1000+Math.random()*9000),s=sub(),tp=s*tipPct/100;
   var lines=Object.keys(cart).map(function(k){return cart[k].q+' x '+k+' - '+money(cart[k].q*cart[k].p)});
-  last='NEW PICKUP ORDER #'+id+'\n'+lines.join('\n')+'\nSubtotal: '+money(s)+' (+HST = '+money(s*(1+TAX))+')\nPay at pickup\nName: '+nm+'\nPhone: '+ph+'\nPickup: '+$('ctime').value+($('cnote').value.trim()?'\nNotes: '+$('cnote').value.trim():'');
-  $('cmsg').textContent=last;$('cresend').href=smsLink(last);
+  last='NEW PICKUP ORDER #'+id+'\n'+lines.join('\n')+'\nSubtotal: '+money(s)+'\nHST: '+money(s*TAX)+'\nTip: '+money(tp)+'\nTOTAL: '+money(s*(1+TAX)+tp)+'\nPayment: '+method+' at pickup\nName: '+d.name+'\nPhone: '+d.phone+(d.email?'\nEmail: '+d.email:'')+'\nPickup: '+d.pickup+(d.notes?'\nNotes: '+d.notes:'');
+  $('cmsg').textContent=last;$('cresend').href=smsLink(last);$('cresend').hidden=false;$('donettl').textContent='Almost done!';
   var mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  $('cdone').textContent=mobile?'Your text app should be open with order #'+id+' — tap Send to place it. Not sent yet? Tap “Open text app again”.':'On a computer? Text this order to '+ORDER_SMS.replace(/^\+1(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3')+' from your phone, or call us.';
-  $('cstep1').hidden=true;$('cstep2').hidden=false;
-  if(mobile)location.href=smsLink(last);
+  $('cdone').textContent=mobile?'Your text app opens with order #'+id+' filled in — tap Send to place it. Not sent? Tap “Send order by text”.':'On a computer? Text this order to 709-341-7937 from your phone, or call us.';
+  go(5); if(mobile)location.href=smsLink(last);
+ }
+ $('payonline').addEventListener('click',function(){
+  var btn=this,err=$('cerr4');err.textContent='';
+  if(!PAY_API){err.textContent='Online payment is coming soon — please pay in person.';return}
+  if(!/^\S+@\S+\.\S+$/.test($('cemail').value.trim())){err.textContent='Online payment needs your email for the receipt — go back and add it.';return}
+  btn.disabled=true;btn.textContent='Opening secure checkout…';
+  var items=Object.keys(cart).map(function(k){return {name:k,q:cart[k].q}});
+  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:items,tipPct:tipPct,customer:details()})})
+   .then(function(r){return r.json()}).then(function(j){if(j.url){location.href=j.url}else{throw new Error(j.error||'Payment error')}})
+   .catch(function(e){err.textContent='Could not start online payment ('+e.message+'). Please pay in person or call us.';btn.disabled=false;btn.textContent='💳 Pay online now — Card / Apple Pay / Google Pay'});
  });
+ if(!PAY_API){$('payonline').disabled=true;$('payonlinenote').textContent='Online card payment coming soon.'}
  $('ccopy').addEventListener('click',function(){var b=this;try{navigator.clipboard.writeText(last).then(function(){b.textContent='Copied ✓'})}catch(e){}});
- $('cnew').addEventListener('click',function(){cart={};save();$('cstep2').hidden=true;$('cstep1').hidden=false;render();close()});
+ $('cnew').addEventListener('click',function(){cart={};save();step=1;render();close();history.replaceState(null,'',location.pathname)});
+ var qs=new URLSearchParams(location.search);
+ if(qs.get('paid')){cart={};save();step=5;render();go(5);$('donettl').textContent='Payment received — thank you!';$('cdone').textContent='Your order is paid and has been sent to our kitchen. See you at 146 King St W!';$('cmsg').textContent='';$('cresend').hidden=true;$('cart').classList.add('open');document.body.style.overflow='hidden'}
+ if(qs.get('payfail')){step=4;open();$('cerr4').textContent='Payment did not go through. Please try again or pay in person.'}
  badge();
  var q=document.getElementById('q'),cards=[].slice.call(document.querySelectorAll('.cat:not(.pop) .it')),secs=[].slice.call(document.querySelectorAll('.cat'));
  q.addEventListener('input',function(){
