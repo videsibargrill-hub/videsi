@@ -7,6 +7,11 @@
 //   MERCHANT_ID              GVS3J6RNJM581
 //   CLOVER_API               https://api.clover.com   (use https://apisandbox.dev.clover.com to test)
 //   SITE                     https://videsibarandgrill.com
+//   CLOVER_REST_TOKEN (Secret) Clover REST API token with Orders read+write and Payments read (for kitchen printing)
+//   WEBHOOK_SECRET    (Secret) Hosted Checkout webhook "Signing Secret" from the Clover Dashboard
+//
+// Kitchen printing: in Clover's Hosted Checkout settings, set the webhook URL to  <this worker URL>/webhook .
+// When a payment is approved, the worker finds the Clover order and sends it to the order printer.
 
 const HST = 1300000; // 13% in Clover's rate format (10% = 1000000)
 
@@ -22,6 +27,7 @@ export default {
       new Response(JSON.stringify(obj), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (new URL(req.url).pathname === '/webhook') return webhook(req, env);
     if (req.method !== 'POST') return reply({ error: 'POST only' }, 405);
 
     let body;
@@ -80,3 +86,35 @@ export default {
     return reply({ url: out.href });
   },
 };
+
+// ---------- Kitchen printing after an approved online payment ----------
+async function webhook(req, env) {
+  const raw = await req.text();
+  const sig = req.headers.get('Clover-Signature') || '';
+  const t = (sig.match(/t=(\d+)/) || [])[1];
+  const v1 = (sig.match(/v1=([0-9a-f]+)/) || [])[1];
+  if (!t || !v1 || !(await validSig(env.WEBHOOK_SECRET, t + '.' + raw, v1))) return new Response('bad signature', { status: 401 });
+  if (Math.abs(Date.now() / 1000 - Number(t)) > 600) return new Response('stale', { status: 401 });
+
+  let ev; try { ev = JSON.parse(raw); } catch { return new Response('bad json', { status: 400 }); }
+  const type = ev.type || ev.Type, status = ev.status || ev.Status, paymentId = ev.id || ev.Id;
+  if (type !== 'PAYMENT' || status !== 'APPROVED' || !paymentId) return new Response('ignored');
+
+  const api = (env.CLOVER_API || 'https://api.clover.com') + '/v3/merchants/' + env.MERCHANT_ID;
+  const auth = { Authorization: 'Bearer ' + env.CLOVER_REST_TOKEN, 'Content-Type': 'application/json' };
+  const pay = await (await fetch(api + '/payments/' + paymentId + '?expand=order', { headers: auth })).json().catch(() => ({}));
+  const orderId = pay.order && pay.order.id;
+  if (!orderId) return new Response('no order on payment', { status: 202 });
+  const pr = await fetch(api + '/print_event', { method: 'POST', headers: auth, body: JSON.stringify({ orderRef: { id: orderId } }) });
+  return new Response(pr.ok ? 'printed' : 'print failed ' + pr.status, { status: pr.ok ? 200 : 502 });
+}
+
+async function validSig(secret, message, expectedHex) {
+  if (!secret) return false;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message)));
+  const hex = [...mac].map(b => b.toString(16).padStart(2, '0')).join('');
+  if (hex.length !== expectedHex.length) return false;
+  let diff = 0; for (let i = 0; i < hex.length; i++) diff |= hex.charCodeAt(i) ^ expectedHex.charCodeAt(i);
+  return diff === 0;
+}
