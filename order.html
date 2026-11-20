@@ -215,6 +215,7 @@ footer a{color:var(--gold2)}
  function badge(){var n=count();[].forEach.call(document.querySelectorAll('.cc'),function(e){e.textContent=n?n:''});
   [].forEach.call(document.querySelectorAll('a.add'),function(a){var c=cart[a.dataset.name];a.classList.toggle('done',!!c);a.textContent=c?('In cart ('+c.q+') +'):'Add +'})}
  function render(){
+  setTimeout(upsell,0);
   var keys=Object.keys(cart),L=$('clines');
   if(!keys.length){L.innerHTML='<div class="empty">Your cart is empty.<br>Tap “Add +” on any dish.</div>';$('c1foot').hidden=true}
   else{$('c1foot').hidden=false;L.innerHTML=keys.map(function(k){var i=cart[k];return '<div class="ln"><div class="nm">'+esc(k)+'<small>'+money(i.p)+' each</small></div><div class="q"><button type="button" data-d="-1" data-k="'+esc(k)+'" aria-label="Remove one">−</button><b>'+i.q+'</b><button type="button" data-d="1" data-k="'+esc(k)+'" aria-label="Add one">+</button></div></div>'}).join('');}
@@ -246,6 +247,26 @@ footer a{color:var(--gold2)}
  function open(){render();go(step>4?1:step);$('cart').classList.add('open');$('cart').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
  function close(){$('cart').classList.remove('open');$('cart').setAttribute('aria-hidden','true');document.body.style.overflow=''}
  function smsLink(body){return 'sms:'+ORDER_SMS+(/iPhone|iPad|iPod|Mac/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(body)}
+ function priceOf(n){var a=document.querySelector('a.add[data-name="'+n.replace(/"/g,'\\"')+'"]');return a?parseFloat(a.dataset.price):0}
+ function upsell(){
+  var L=$('clines');if(!L)return;var box=$('cupsell');if(!box){box=document.createElement('div');box.id='cupsell';box.style.cssText='margin:10px 0 4px';L.parentNode.insertBefore(box,L.nextSibling)}
+  var keys=Object.keys(cart);if(!keys.length){box.innerHTML='';return}
+  var all=keys.join(' | ');
+  var hasDrink=/lassi|chai|coke|soda|drink|buttermilk|chaas|mojito|colada|mule|cooler|spritz|red bull|water|juice/i.test(all);
+  var hasBread=/naan|roti|paratha|kulcha|rice|biryani|pulao|noodle/i.test(all);
+  var hasCurry=/paneer|chicken|dal|kaju|kofta|makhani|kadhai|korma|curry|masala|handi|anguri|lehsuni/i.test(all.replace(/masala (coke|buttermilk|papad|papdi|fries|onion|chaas)|papad|papdi|fries|chaat|tikka|chilli|manchurian|65|lassi|chai|coke|toast|bun/ig,''));
+  var bar=/^B\d/.test(TABLE||'');
+  var s=[];
+  if(bar&&!/chai/i.test(all))s.push('Videsi Kadak Chai');
+  if(bar&&!/samosa|kachori|bun|toast|biscuit/i.test(all))s.push('Videsi Shahi Samosa (2 pcs)');
+  if(hasCurry&&!hasBread)s.push('Garlic Naan');
+  if(!hasDrink)s.push('Mango (Kesar Aam) Lassi','Masala Coke','Fresh Lime Soda');
+  s=s.filter(function(n,i){return s.indexOf(n)===i&&!cart[n]&&priceOf(n)}).slice(0,3);
+  if(!s.length){box.innerHTML='';return}
+  var title=!hasDrink&&!(hasCurry&&!hasBread)?'Add a drink?':(hasCurry&&!hasBread?'Goes great with your curry:':'You might also like:');
+  box.innerHTML='<div style="font-size:14px;opacity:.85;margin-bottom:6px">'+title+'</div><div style="display:flex;gap:6px;flex-wrap:wrap">'+s.map(function(n){return '<button type="button" class="upadd" data-n="'+esc(n)+'" style="padding:6px 10px;border-radius:16px;border:1px solid #d4a64a;background:transparent;color:inherit;cursor:pointer;font-size:13px">+ '+esc(n.replace(' (2 pcs)',''))+' '+money(priceOf(n))+'</button>'}).join('')+'</div>';
+  [].forEach.call(box.querySelectorAll('.upadd'),function(b){b.onclick=function(){var n=b.dataset.n;cart[n]=cart[n]||{p:priceOf(n),q:0};cart[n].q++;save();badge();render()}});
+ }
  function details(){return {name:$('cname').value.trim(),phone:$('cphone').value.trim(),email:$('cemail').value.trim(),pickup:$('ctime').value,notes:$('cnote').value.trim(),offers:!!($('coffers')&&$('coffers').checked)}}
  function isPre(){var r=document.querySelector('input[name="cmode"]:checked');return !TABLE&&!!r&&r.value==='dinein'}
  function applyMode(){var pre=isPre();$('cpartyw').hidden=!pre;var h3=document.querySelector('#cart section[data-step="3"] h3');if(h3&&!TABLE)h3.textContent=pre?'When will you arrive?':'When would you like to pick up?';
