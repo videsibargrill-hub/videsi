@@ -1,6 +1,7 @@
 // Videsi Bar & Grill — online payment server (Cloudflare Worker)
 // Prices every cart from the website's menu.json (customers can't change prices),
 // then opens a Clover Hosted Checkout page so the money goes to Videsi's Clover account.
+// Pay-in-person orders (mode 'inperson') are created as open Clover orders and printed in the kitchen.
 //
 // Settings (Cloudflare → Worker → Settings → Variables):
 //   CLOVER_TOKEN   (Secret)  Clover Ecommerce API *private* token — never put this in the website
@@ -40,7 +41,8 @@ export default {
     const email = String(c.email || '').trim().slice(0, 120);
     const phone = String(c.phone || '').replace(/\D/g, '').slice(-10);
     if (!items.length) return reply({ error: 'Cart is empty' }, 400);
-    if (!name || !/^\S+@\S+\.\S+$/.test(email) || phone.length !== 10) return reply({ error: 'Name, email and phone are required' }, 400);
+    const inPerson = body.mode === 'inperson';
+    if (!name || phone.length !== 10 || (!inPerson && !/^\S+@\S+\.\S+$/.test(email))) return reply({ error: inPerson ? 'Name and phone are required' : 'Name, email and phone are required' }, 400);
 
     const pickup = String(c.pickup || 'ASAP').slice(0, 40);
     const notes = String(c.notes || '').slice(0, 200);
@@ -59,6 +61,32 @@ export default {
     const tipPct = [0, 10, 12, 15, 18].includes(Number(body.tipPct)) ? Number(body.tipPct) : 0;
     const tip = Math.round(subtotal * tipPct / 100);
     if (tip > 0) lineItems.push({ name: 'Tip for the kitchen (' + tipPct + '%)', price: tip, unitQty: 1, note: 'Tip' });
+
+    // ---------- Pay in person (card or cash at pickup): open order in Clover + print in kitchen ----------
+    if (inPerson) {
+      const how = String(body.payWith || '').toLowerCase().includes('cash') ? 'CASH' : 'CARD';
+      const ref = String(body.ref || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 10);
+      const api = (env.CLOVER_API || 'https://api.clover.com') + '/v3/merchants/' + env.MERCHANT_ID;
+      const auth = { Authorization: 'Bearer ' + env.CLOVER_REST_TOKEN, 'Content-Type': 'application/json' };
+      const rates = await (await fetch(api + '/tax_rates', { headers: auth })).json().catch(() => ({}));
+      let tax = (rates.elements || []).filter((x) => x.isDefault).map((x) => ({ id: x.id }));
+      if (!tax.length) tax = (rates.elements || []).filter((x) => /hst/i.test(x.name || '')).map((x) => ({ id: x.id }));
+      const head = ('WEB #' + ref + ' · PAY IN PERSON (' + how + ') · PICKUP ' + pickup + ' · ' + name + ' ' + phone + (notes ? ' · ' + notes : '')).slice(0, 255);
+      const or = await fetch(api + '/orders', { method: 'POST', headers: auth, body: JSON.stringify({ state: 'open', title: ('WEB ' + name).slice(0, 60), note: head }) });
+      const order = await or.json().catch(() => ({}));
+      if (!or.ok || !order.id) return reply({ error: 'Clover order error ' + or.status }, 502);
+      const bulk = [];
+      lineItems.forEach((li, n) => {
+        for (let i = 0; i < li.unitQty; i++) {
+          const isTip = li.note === 'Tip';
+          bulk.push({ name: li.name, price: li.price, note: n === 0 && i === 0 ? head : '', taxRates: isTip ? [] : tax });
+        }
+      });
+      const br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: bulk }) });
+      if (!br.ok) return reply({ error: 'Clover items error ' + br.status }, 502);
+      const pr = await fetch(api + '/print_event', { method: 'POST', headers: auth, body: JSON.stringify({ orderRef: { id: order.id } }) });
+      return reply({ ok: true, orderId: order.id, printed: pr.ok });
+    }
 
     const [first, ...rest] = name.split(/\s+/);
     const payload = {
