@@ -244,8 +244,14 @@ footer a{color:var(--gold2)}
   last='NEW PICKUP ORDER #'+id+'\n'+lines.join('\n')+'\nSubtotal: '+money(s)+'\nHST: '+money(s*TAX)+'\nTip: '+money(tp)+'\nTOTAL: '+money(s*(1+TAX)+tp)+'\nPayment: '+method+' at pickup\nName: '+d.name+'\nPhone: '+d.phone+(d.email?'\nEmail: '+d.email:'')+'\nPickup: '+d.pickup+(d.notes?'\nNotes: '+d.notes:'');
   $('cmsg').textContent=last;$('cresend').href=smsLink(last);$('cresend').hidden=false;$('donettl').textContent='Almost done!';
   var mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  $('cdone').textContent=mobile?'Your text app opens with order #'+id+' filled in — tap Send to place it. Not sent? Tap “Send order by text”.':'On a computer? Text this order to 709-341-7937 from your phone, or call us.';
-  go(5); if(mobile)location.href=smsLink(last);
+  function fallback(){$('cresend').hidden=false;$('donettl').textContent='Almost done!';$('cdone').textContent=mobile?'Your text app opens with order #'+id+' filled in — tap Send to place it. Not sent? Tap “Send order by text”.':'On a computer? Text this order to 709-341-7937 from your phone, or call us.';go(5);if(mobile)location.href=smsLink(last)}
+  if(!PAY_API){fallback();return}
+  $('cresend').hidden=true;$('donettl').textContent='Sending your order…';$('cdone').textContent='';go(5);
+  var items=Object.keys(cart).map(function(k){return {name:k,q:cart[k].q}});
+  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,items:items,tipPct:tipPct,customer:d})})
+   .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error('x');return j})})
+   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent='Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.';cart={};save();badge()})
+   .catch(function(){fallback()});
  }
  $('payonline').addEventListener('click',function(){
   var btn=this,err=$('cerr4');err.textContent='';
