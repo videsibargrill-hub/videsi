@@ -149,11 +149,14 @@ footer a{color:var(--gold2)}
   <label for="cphone">Phone *</label><input id="cphone" type="tel" autocomplete="tel" inputmode="tel" placeholder="519-555-1234">
   <label for="cemail">Email (for your receipt)</label><input id="cemail" type="email" autocomplete="email">
   <label for="cnote">Notes (spice level, allergies…)</label><textarea id="cnote" rows="2"></textarea>
+  <label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px;font-weight:400"><input type="checkbox" id="coffers" style="width:auto;margin-top:3px"> Text/email me Videsi specials &amp; offers (unsubscribe anytime)</label>
   <div class="err" id="cerr2" role="alert"></div>
   <button class="btn solid go" type="button" data-next="3">Continue</button><button class="back" type="button" data-next="1">‹ Back to cart</button>
  </section>
  <section data-step="3" hidden>
   <h3 class="sub">When would you like to pick up?</h3>
+  <div id="cmode" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px"><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="radio" name="cmode" value="pickup" checked style="width:auto"> 🛍️ Pickup / takeout</label><label style="display:flex;gap:8px;align-items:center;font-weight:400"><input type="radio" name="cmode" value="dinein" style="width:auto"> 🍽️ Dine-in pre-order — have it ready when I arrive</label></div>
+  <div id="cpartyw" hidden><label for="cparty">Party size</label><select id="cparty"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10+</option></select></div>
   <select id="ctime"></select>
   <div class="muted" id="cclosed"></div>
   <button class="btn solid go" type="button" data-next="4">Continue</button><button class="back" type="button" data-next="2">‹ Back</button>
@@ -191,6 +194,11 @@ footer a{color:var(--gold2)}
   var bar=document.createElement('div');bar.id='tablebar';bar.setAttribute('role','status');bar.style.cssText='position:sticky;top:0;z-index:50;background:#d4a64a;color:#111;text-align:center;font-weight:600;padding:10px 12px;font-size:15px';bar.textContent='🍽️ Ordering for Table '+TABLE+' — add your dishes, send to the kitchen, and pay your server when you\'re done.';document.body.insertBefore(bar,document.body.firstChild);
   var ft=document.querySelector('#c1foot .muted');if(ft)ft.textContent='Dine-in · Table '+TABLE+' · we bring it to your table';
   var h3=document.querySelector('#cart section[data-step="3"] h3');if(h3)h3.textContent='Your table';
+  var cm=document.getElementById('cmode');if(cm)cm.style.display='none';
+  var cb=document.createElement('button');cb.type='button';cb.textContent='🔔 Call server';cb.style.cssText='margin-left:10px;padding:4px 10px;border-radius:14px;border:1px solid #111;background:#fff;color:#111;font-weight:600;cursor:pointer';bar.appendChild(cb);
+  var menu=document.createElement('div');menu.hidden=true;menu.style.cssText='margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap';
+  [['water','💧 Water'],['cutlery','🍴 Cutlery / napkins'],['bill','🧾 Ready for the bill'],['help','🙋 Help']].forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o[1];b.style.cssText='padding:6px 10px;border-radius:14px;border:0;background:#0f2a1d;color:#fff;cursor:pointer';b.onclick=function(){menu.hidden=true;cb.textContent='Calling…';fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'call',table:TABLE,reason:o[0]})}).then(function(r){cb.textContent=r.ok?'✓ A server is on the way':'Please wave to a server';setTimeout(function(){cb.textContent='🔔 Call server'},20000)}).catch(function(){cb.textContent='Please wave to a server'})};menu.appendChild(b)});
+  bar.appendChild(menu);cb.onclick=function(){menu.hidden=!menu.hidden};
   var tp=document.getElementById('ctips');if(tp){tp.style.display='none';var lb=tp.previousElementSibling;if(lb&&lb.tagName==='LABEL')lb.style.display='none'}
   var h4=document.querySelector('#cart section[data-step="4"] h3');if(h4)h4.textContent='Send your order';
   ['payonline','payonlinenote'].forEach(function(i){var e=document.getElementById(i);if(e)e.style.display='none'});
@@ -228,7 +236,7 @@ footer a{color:var(--gold2)}
    if(ph.length<10){$('cerr2').textContent='Please enter a 10-digit phone number.';$('cphone').focus();return}
    var em=$('cemail').value.trim(); if(em&&!/^\S+@\S+\.\S+$/.test(em)){$('cerr2').textContent='Please check your email address.';return}
    $('cerr2').textContent='';}
-  if(n===3)times(); if(n===4)totals();
+  if(n===3){times();applyMode()} if(n===4)totals();
   step=n;[].forEach.call(document.querySelectorAll('#cart section'),function(s){s.hidden=+s.dataset.step!==n});
   [].forEach.call(document.querySelectorAll('#cart .steps2 span'),function(s){s.classList.toggle('on',+s.dataset.s<=n)});
   document.querySelector('#cart .pn').scrollTop=0;
@@ -236,7 +244,14 @@ footer a{color:var(--gold2)}
  function open(){render();go(step>4?1:step);$('cart').classList.add('open');$('cart').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
  function close(){$('cart').classList.remove('open');$('cart').setAttribute('aria-hidden','true');document.body.style.overflow=''}
  function smsLink(body){return 'sms:'+ORDER_SMS+(/iPhone|iPad|iPod|Mac/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(body)}
- function details(){return {name:$('cname').value.trim(),phone:$('cphone').value.trim(),email:$('cemail').value.trim(),pickup:$('ctime').value,notes:$('cnote').value.trim()}}
+ function details(){return {name:$('cname').value.trim(),phone:$('cphone').value.trim(),email:$('cemail').value.trim(),pickup:$('ctime').value,notes:$('cnote').value.trim(),offers:!!($('coffers')&&$('coffers').checked)}}
+ function isPre(){var r=document.querySelector('input[name="cmode"]:checked');return !TABLE&&!!r&&r.value==='dinein'}
+ function applyMode(){var pre=isPre();$('cpartyw').hidden=!pre;var h3=document.querySelector('#cart section[data-step="3"] h3');if(h3&&!TABLE)h3.textContent=pre?'When will you arrive?':'When would you like to pick up?';
+  var po=$('payonline'),pn=$('payonlinenote'),cash=document.querySelector('#cart [data-pay="Cash"]'),card=document.querySelector('#cart .pay.card');
+  if(!TABLE&&card){[po,pn,cash].forEach(function(e){if(e)e.style.display=pre?'none':''});card.dataset.pay=pre?'Pay when you arrive':'Credit/Debit in person';card.textContent=pre?'🍽️ Send pre-order — pay when you dine':'💳 Credit/Debit in person'}
+  var ft=document.querySelector('#c1foot .muted');if(ft&&!TABLE)ft.textContent=pre?'Dine-in pre-order at 146 King St W · ready when you arrive':'Pickup from 146 King St W · approx. 20 min'}
+ document.addEventListener('change',function(ev){if(ev.target&&ev.target.name==='cmode')applyMode()});
+ if(/[?&]dinein=1/.test(location.search)){var dr=document.querySelector('input[name="cmode"][value="dinein"]');if(dr){dr.checked=true;setTimeout(applyMode,0)}}
  document.addEventListener('click',function(ev){
   var a=ev.target.closest('a.add');
   if(a){ev.preventDefault();var k=a.dataset.name;cart[k]=cart[k]||{p:parseFloat(a.dataset.price),q:0};cart[k].q++;save();badge();
@@ -260,9 +275,9 @@ footer a{color:var(--gold2)}
   if(!PAY_API){fallback();return}
   $('cresend').hidden=true;$('donettl').textContent='Sending your order…';$('cdone').textContent='';go(5);
   var items=Object.keys(cart).map(function(k){return {name:k,q:cart[k].q}});
-  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,table:TABLE,items:items,tipPct:tipPct,customer:d})})
+  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,table:TABLE,preorder:isPre(),party:isPre()?$('cparty').value:'',items:items,tipPct:tipPct,customer:d})})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error('x');return j})})
-   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent=TABLE?('Thank you! Order #'+id+' has been sent to our kitchen. We\'ll bring it to Table '+TABLE+'. Please pay your server when you\'re done.'):('Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.');cart={};save();badge()})
+   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent=isPre()?('Thank you! Pre-order #'+id+' is in. Your table for '+$('cparty').value+' and your meal will be ready at '+d.pickup+'. Pay when you are done eating — see you soon!'):TABLE?('Thank you! Order #'+id+' has been sent to our kitchen. We\'ll bring it to Table '+TABLE+'. Please pay your server when you\'re done.'):('Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.');cart={};save();badge()})
    .catch(function(){fallback()});
  }
  $('payonline').addEventListener('click',function(){
