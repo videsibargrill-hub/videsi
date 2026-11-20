@@ -191,6 +191,8 @@ footer a{color:var(--gold2)}
  var TABLE=(new URLSearchParams(location.search).get('table')||'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim().slice(0,8);
  var tip=document.getElementById('tip'),t,$=function(i){return document.getElementById(i)},tipPct=12,step=1,last='';
  if(TABLE){tipPct=0;(function(){
+  var intro=document.querySelector('main p, .intro, header + section p');var hs=[...document.querySelectorAll('p')].find(function(p){return /Pickup from 146 King St W, Downtown Kitchener/.test(p.textContent)});if(hs)hs.textContent='Dine-in at Table '+TABLE+' · Add your dishes, tap View Cart and send your order. We bring it to your table — pay your server when you are done.';
+  [...document.querySelectorAll('span,div,li,p')].forEach(function(el){if(el.children.length===0&&/Pick up hot/.test(el.textContent))el.textContent=el.textContent.replace('Pick up hot','We bring it to you')});
   var bar=document.createElement('div');bar.id='tablebar';bar.setAttribute('role','status');bar.style.cssText='position:sticky;top:0;z-index:50;background:#d4a64a;color:#111;text-align:center;font-weight:600;padding:10px 12px;font-size:15px';bar.textContent='🍽️ Ordering for Table '+TABLE+' — add your dishes, send to the kitchen, and pay your server when you\'re done.';document.body.insertBefore(bar,document.body.firstChild);
   var ft=document.querySelector('#c1foot .muted');if(ft)ft.textContent='Dine-in · Table '+TABLE+' · we bring it to your table';
   var h3=document.querySelector('#cart section[data-step="3"] h3');if(h3)h3.textContent='Your table';
@@ -277,7 +279,8 @@ footer a{color:var(--gold2)}
   var items=Object.keys(cart).map(function(k){return {name:k,q:cart[k].q}});
   fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,table:TABLE,preorder:isPre(),party:isPre()?$('cparty').value:'',items:items,tipPct:tipPct,customer:d})})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error('x');return j})})
-   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent=isPre()?('Thank you! Pre-order #'+id+' is in. Your table for '+$('cparty').value+' and your meal will be ready at '+d.pickup+'. Pay when you are done eating — see you soon!'):TABLE?('Thank you! Order #'+id+' has been sent to our kitchen. We\'ll bring it to Table '+TABLE+'. Please pay your server when you\'re done.'):('Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.');cart={};save();badge()})
+   .then(function(){var rv=document.getElementById('creview');if(!rv){rv=document.createElement('p');rv.id='creview';rv.style.cssText='margin-top:14px;font-size:15px';rv.innerHTML='⭐ Enjoying Videsi? <a href="https://g.page/r/CcLypuDpGYvBEAE/review" target="_blank" rel="noopener" style="color:#d4a64a;font-weight:600">Leave us a quick Google review</a> — it really helps a new local restaurant.';$('cdone').parentNode.insertBefore(rv,$('cdone').nextSibling)}
+    $('donettl').textContent='Order received!';$('cdone').textContent=isPre()?('Thank you! Pre-order #'+id+' is in. Your table for '+$('cparty').value+' and your meal will be ready at '+d.pickup+'. Pay when you are done eating — see you soon!'):TABLE?('Thank you! Order #'+id+' has been sent to our kitchen. We\'ll bring it to Table '+TABLE+'. Please pay your server when you\'re done.'):('Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.');cart={};save();badge()})
    .catch(function(){fallback()});
  }
  $('payonline').addEventListener('click',function(){
