@@ -183,7 +183,7 @@ footer a{color:var(--gold2)}
 </div></div>
 <script>
 (function(){
- var ORDER_SMS='+17093417937', PAY_API='', TAX=0.13, KEY='videsiCart';
+ var ORDER_SMS='+17093417937', PAY_API='https://videsi-pay.videsibargrill.workers.dev', TAX=0.13, KEY='videsiCart';
  var cart={}; try{cart=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
  var tip=document.getElementById('tip'),t,$=function(i){return document.getElementById(i)},tipPct=12,step=1,last='';
  function save(){try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}}
