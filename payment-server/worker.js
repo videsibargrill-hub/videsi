@@ -106,7 +106,7 @@ export default {
         try {
           const since = Date.now() - 6 * 3600 * 1000;
           const ol = await (await fetch(api + '/orders?filter=' + encodeURIComponent('createdTime>' + since) + '&limit=100&expand=payments', { headers: auth })).json();
-          order = (ol.elements || []).find((o) => o.title === tableTitle && o.state === 'open' && !(o.payments && o.payments.elements && o.payments.elements.length)) || null;
+          order = (ol.elements || []).filter((o) => o.title === tableTitle && o.state === 'open' && !/TEST/i.test(o.note || '') && !(o.payments && o.payments.elements && o.payments.elements.length)).sort((x, y) => x.createdTime - y.createdTime)[0] || null;
           if (order) await fetch(api + '/orders/' + order.id, { method: 'POST', headers: auth, body: JSON.stringify({ note: ((order.note ? order.note + ' | ' : '') + 'ADDED: ' + head).slice(0, 2000) }) }).catch(() => {});
         } catch (e) {
           order = null;
