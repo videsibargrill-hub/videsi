@@ -185,7 +185,18 @@ footer a{color:var(--gold2)}
 (function(){
  var ORDER_SMS='+17093417937', PAY_API='https://videsi-pay.videsibargrill.workers.dev', TAX=0.13, KEY='videsiCart';
  var cart={}; try{cart=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+ var TABLE=(new URLSearchParams(location.search).get('table')||'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').trim().slice(0,8);
  var tip=document.getElementById('tip'),t,$=function(i){return document.getElementById(i)},tipPct=12,step=1,last='';
+ if(TABLE){tipPct=0;(function(){
+  var bar=document.createElement('div');bar.id='tablebar';bar.setAttribute('role','status');bar.style.cssText='position:sticky;top:0;z-index:50;background:#d4a64a;color:#111;text-align:center;font-weight:600;padding:10px 12px;font-size:15px';bar.textContent='🍽️ Ordering for Table '+TABLE+' — add your dishes, send to the kitchen, and pay your server when you\'re done.';document.body.insertBefore(bar,document.body.firstChild);
+  var ft=document.querySelector('#c1foot .muted');if(ft)ft.textContent='Dine-in · Table '+TABLE+' · we bring it to your table';
+  var h3=document.querySelector('#cart section[data-step="3"] h3');if(h3)h3.textContent='Your table';
+  var tp=document.getElementById('ctips');if(tp){tp.style.display='none';var lb=tp.previousElementSibling;if(lb&&lb.tagName==='LABEL')lb.style.display='none'}
+  var h4=document.querySelector('#cart section[data-step="4"] h3');if(h4)h4.textContent='Send your order';
+  ['payonline','payonlinenote'].forEach(function(i){var e=document.getElementById(i);if(e)e.style.display='none'});
+  var cash=document.querySelector('#cart [data-pay="Cash"]');if(cash)cash.style.display='none';
+  var card=document.querySelector('#cart [data-pay="Credit/Debit in person"]');if(card){card.dataset.pay='Pay at table';card.textContent='🍽️ Send order to kitchen — pay at your table'}
+ })()}
  function save(){try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}}
  function money(x){return '$'+x.toFixed(2)}
  function count(){var n=0;for(var k in cart)n+=cart[k].q;return n}
@@ -202,6 +213,7 @@ footer a{color:var(--gold2)}
  function totals(){var s=sub(),tx=s*TAX,tp=s*tipPct/100;$('psub').textContent=money(s);$('ptax').textContent=money(tx);$('ptip').textContent=money(tp)+(tipPct?' ('+tipPct+'%)':'');$('ptot').textContent=money(s+tx+tp);
   [].forEach.call(document.querySelectorAll('#ctips button'),function(b){b.classList.toggle('on',+b.dataset.t===tipPct)})}
  function times(){
+  if(TABLE){$('ctime').innerHTML='<option>Dine-in · Table '+TABLE+'</option>';$('cclosed').textContent='';return}
   var s=$('ctime'),now=new Date(),o=[],h=now.getHours(),open=h>=12;
   if(open)o.push('<option>ASAP (about 20–25 min)</option>');
   var d=new Date(now.getTime()+30*60000); if(!open){d=new Date(now);d.setHours(12,15,0,0)}
@@ -248,9 +260,9 @@ footer a{color:var(--gold2)}
   if(!PAY_API){fallback();return}
   $('cresend').hidden=true;$('donettl').textContent='Sending your order…';$('cdone').textContent='';go(5);
   var items=Object.keys(cart).map(function(k){return {name:k,q:cart[k].q}});
-  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,items:items,tipPct:tipPct,customer:d})})
+  fetch(PAY_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'inperson',payWith:method,ref:id,table:TABLE,items:items,tipPct:tipPct,customer:d})})
    .then(function(r){return r.json().then(function(j){if(!r.ok||!j.ok)throw new Error('x');return j})})
-   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent='Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.';cart={};save();badge()})
+   .then(function(){$('donettl').textContent='Order received!';$('cdone').textContent=TABLE?('Thank you! Order #'+id+' has been sent to our kitchen. We\'ll bring it to Table '+TABLE+'. Please pay your server when you\'re done.'):('Thank you! Order #'+id+' has been sent to our kitchen. Please pay ('+method+') when you pick up at 146 King St W.');cart={};save();badge()})
    .catch(function(){fallback()});
  }
  $('payonline').addEventListener('click',function(){
