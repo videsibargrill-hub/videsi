@@ -82,8 +82,24 @@ export default {
           bulk.push({ name: li.name, price: li.price, note: n === 0 && i === 0 ? head : '', taxRates: isTip ? [] : tax });
         }
       });
-      const br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: bulk }) });
-      if (!br.ok) return reply({ error: 'Clover items error ' + br.status }, 502);
+      let br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: bulk }) });
+      if (!br.ok) {
+        // Retry without tax links, then one line item at a time
+        const plain = bulk.map((b) => ({ name: b.name, price: b.price, note: b.note }));
+        br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: plain }) });
+        if (!br.ok) {
+          let okAll = true;
+          for (const p of plain) {
+            const one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p) });
+            if (!one.ok) { okAll = false; br = one; break; }
+          }
+          if (!okAll) {
+            const msg = (await br.text().catch(() => '')).slice(0, 200);
+            await fetch(api + '/orders/' + order.id, { method: 'DELETE', headers: auth }).catch(() => {});
+            return reply({ error: 'Clover items error ' + br.status + ' ' + msg }, 502);
+          }
+        }
+      }
       const pr = await fetch(api + '/print_event', { method: 'POST', headers: auth, body: JSON.stringify({ orderRef: { id: order.id } }) });
       return reply({ ok: true, orderId: order.id, printed: pr.ok });
     }
