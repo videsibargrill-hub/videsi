@@ -75,8 +75,28 @@ export default {
       const rates = await (await fetch(api + '/tax_rates', { headers: auth })).json().catch(() => ({}));
       let tax = (rates.elements || []).filter((x) => x.isDefault).map((x) => ({ id: x.id }));
       if (!tax.length) tax = (rates.elements || []).filter((x) => /hst/i.test(x.name || '')).map((x) => ({ id: x.id }));
-      const head = ('WEB #' + ref + ' · PAY IN PERSON (' + how + ') · PICKUP ' + pickup + ' · ' + name + ' ' + phone + (notes ? ' · ' + notes : '')).slice(0, 255);
-      const or = await fetch(api + '/orders', { method: 'POST', headers: auth, body: JSON.stringify({ state: 'open', title: ('WEB ' + name).slice(0, 60), note: head }) });
+      // Dine-in table orders from table QR codes (?table=F3) use the same titles as Clover's floor plan
+      const AREAS = { F: 'Front Royal', M: 'Main Shahi Booth', DUO: 'Main Shahi Booth', B: 'Premium Bar', VIP: 'VIP Lounge' };
+      const tm = String(body.table || '').toUpperCase().replace(/[^A-Z0-9]/g, '').match(/^(VIP|DUO|F|M|B)(\d{1,2})$/);
+      const tableTitle = tm ? (tm[1].length > 1 ? tm[1] + ' ' + tm[2] : tm[1] + tm[2]) + ' - ' + AREAS[tm[1]] : '';
+      const head = (tableTitle
+        ? 'TABLE ' + tableTitle + ' · DINE-IN · PAY AT TABLE · WEB #' + ref + ' · ' + name + ' ' + phone + (notes ? ' · ' + notes : '')
+        : 'WEB #' + ref + ' · PAY IN PERSON (' + how + ') · PICKUP ' + pickup + ' · ' + name + ' ' + phone + (notes ? ' · ' + notes : '')).slice(0, 255);
+
+      // Save the guest to Clover Customers (find by phone first so repeat guests are not duplicated)
+      let custId = null;
+      try {
+        const found = await (await fetch(api + '/customers?filter=' + encodeURIComponent('phoneNumber=' + phone) + '&limit=1', { headers: auth })).json();
+        custId = found && found.elements && found.elements[0] ? found.elements[0].id : null;
+        if (!custId) {
+          const parts = name.split(/\s+/);
+          const okEmail = /^\S+@\S+\.\S+$/.test(email);
+          const cr = await fetch(api + '/customers', { method: 'POST', headers: auth, body: JSON.stringify({ firstName: parts[0], lastName: parts.slice(1).join(' '), phoneNumbers: [{ phoneNumber: phone }], emailAddresses: okEmail ? [{ emailAddress: email }] : [] }) });
+          const cj = await cr.json().catch(() => ({}));
+          custId = cj.id || null;
+        }
+      } catch (e) {}
+      const or = await fetch(api + '/orders', { method: 'POST', headers: auth, body: JSON.stringify({ state: 'open', title: tableTitle || ('WEB ' + name).slice(0, 60), note: head, customers: custId ? [{ id: custId }] : undefined }) });
       const order = await or.json().catch(() => ({}));
       if (!or.ok || !order.id) return reply({ error: 'Clover order error ' + or.status }, 502);
       const bulk = [];
