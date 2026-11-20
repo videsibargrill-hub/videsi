@@ -62,6 +62,10 @@ export default {
     const tip = Math.round(subtotal * tipPct / 100);
     if (tip > 0) lineItems.push({ name: 'Tip for the kitchen (' + tipPct + '%)', price: tip, unitQty: 1, note: 'Tip' });
 
+    // Link each line to the real Clover inventory item (printer labels: kitchen / drinks, and item taxes)
+    const inv = await cloverItems(env);
+    for (const li of lineItems) { const id = li.note === 'Tip' ? null : inv[norm(li.name)]; if (id) li.itemId = id; }
+
     // ---------- Pay in person (card or cash at pickup): open order in Clover + print in kitchen ----------
     if (inPerson) {
       const how = String(body.payWith || '').toLowerCase().includes('cash') ? 'CASH' : 'CARD';
@@ -79,18 +83,21 @@ export default {
       lineItems.forEach((li, n) => {
         for (let i = 0; i < li.unitQty; i++) {
           const isTip = li.note === 'Tip';
-          bulk.push({ name: li.name, price: li.price, note: n === 0 && i === 0 ? head : '', taxRates: isTip ? [] : tax });
+          const b = { name: li.name, price: li.price, note: n === 0 && i === 0 ? head : '' };
+          if (li.itemId) b.item = { id: li.itemId }; else if (!isTip) b.taxRates = tax;
+          bulk.push(b);
         }
       });
       let br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: bulk }) });
       if (!br.ok) {
         // Retry without tax links, then one line item at a time
-        const plain = bulk.map((b) => ({ name: b.name, price: b.price, note: b.note }));
+        const plain = bulk.map((b) => (b.item ? { name: b.name, price: b.price, note: b.note, item: b.item } : { name: b.name, price: b.price, note: b.note }));
         br = await fetch(api + '/orders/' + order.id + '/bulk_line_items', { method: 'POST', headers: auth, body: JSON.stringify({ items: plain }) });
         if (!br.ok) {
           let okAll = true;
           for (const p of plain) {
-            const one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p) });
+            let one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p) });
+            if (!one.ok && p.item) one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify({ name: p.name, price: p.price, note: p.note }) });
             if (!one.ok) { okAll = false; br = one; break; }
           }
           if (!okAll) {
@@ -105,13 +112,15 @@ export default {
     }
 
     const [first, ...rest] = name.split(/\s+/);
+    const plainItems = lineItems.map(({ itemId, ...l }) => l);
+    const hcItems = lineItems.map(({ itemId, ...l }) => (itemId ? { ...l, itemRefUuid: itemId } : l));
     const payload = {
       customer: { firstName: first, lastName: rest.join(' ') || '-', email, phoneNumber: phone },
-      shoppingCart: { lineItems },
+      shoppingCart: { lineItems: hcItems },
       // Return pages (paid / failed / cancel) are set in Clover Dashboard → Hosted checkout
     };
 
-    const r = await fetch((env.CLOVER_API || 'https://api.clover.com') + '/invoicingcheckoutservice/v1/checkouts', {
+    const send = (p) => fetch((env.CLOVER_API || 'https://api.clover.com') + '/invoicingcheckoutservice/v1/checkouts', {
       method: 'POST',
       headers: {
         accept: 'application/json',
@@ -119,8 +128,10 @@ export default {
         'X-Clover-Merchant-Id': env.MERCHANT_ID,
         Authorization: 'Bearer ' + env.CLOVER_TOKEN,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(p),
     });
+    let r = await send(payload);
+    if (!r.ok) r = await send({ ...payload, shoppingCart: { lineItems: plainItems } });
     const out = await r.json().catch(() => ({}));
     if (!r.ok || !out.href) return reply({ error: 'Clover error ' + r.status + (out.message ? ': ' + out.message : '') }, 502);
     return reply({ url: out.href });
@@ -157,4 +168,18 @@ async function validSig(secret, message, expectedHex) {
   if (hex.length !== expectedHex.length) return false;
   let diff = 0; for (let i = 0; i < hex.length; i++) diff |= hex.charCodeAt(i) ^ expectedHex.charCodeAt(i);
   return diff === 0;
+}
+
+// Clover inventory items by name, so web orders use the real items (printer labels + taxes)
+async function cloverItems(env) {
+  const api = (env.CLOVER_API || 'https://api.clover.com') + '/v3/merchants/' + env.MERCHANT_ID;
+  const r = await fetch(api + '/items?limit=1000', { headers: { Authorization: 'Bearer ' + env.CLOVER_REST_TOKEN } }).catch(() => null);
+  const j = r && r.ok ? await r.json().catch(() => ({})) : {};
+  const map = {};
+  for (const it of j.elements || []) map[norm(it.name)] = it.id;
+  return map;
+}
+
+function norm(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
