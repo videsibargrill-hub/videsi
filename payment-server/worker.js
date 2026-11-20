@@ -73,8 +73,8 @@ export default {
       const api = (env.CLOVER_API || 'https://api.clover.com') + '/v3/merchants/' + env.MERCHANT_ID;
       const auth = { Authorization: 'Bearer ' + env.CLOVER_REST_TOKEN, 'Content-Type': 'application/json' };
       const rates = await (await fetch(api + '/tax_rates', { headers: auth })).json().catch(() => ({}));
-      let tax = (rates.elements || []).filter((x) => x.isDefault).map((x) => ({ id: x.id }));
-      if (!tax.length) tax = (rates.elements || []).filter((x) => /hst/i.test(x.name || '')).map((x) => ({ id: x.id }));
+      let tax = (rates.elements || []).filter((x) => x.isDefault).map((x) => ({ id: x.id, name: x.name, rate: x.rate }));
+      if (!tax.length) tax = (rates.elements || []).filter((x) => /hst/i.test(x.name || '')).map((x) => ({ id: x.id, name: x.name, rate: x.rate }));
       // Dine-in table orders from table QR codes (?table=F3) use the same titles as Clover's floor plan
       const AREAS = { F: 'Front Royal', M: 'Main Shahi Booth', DUO: 'Main Shahi Booth', B: 'Premium Bar', VIP: 'VIP Lounge' };
       const tm = String(body.table || '').toUpperCase().replace(/[^A-Z0-9]/g, '').match(/^(VIP|DUO|F|M|B)(\d{1,2})$/);
@@ -100,11 +100,18 @@ export default {
       const order = await or.json().catch(() => ({}));
       if (!or.ok || !order.id) return reply({ error: 'Clover order error ' + or.status }, 502);
       const bulk = [];
+      // Table orders: a $0 'TABLE SETUP' line (drinks label -> front printer) so servers set the table right away
+      const setupId = tableTitle ? inv[norm('TABLE SETUP (Server)')] : null;
+      if (setupId) {
+        const count = lineItems.filter((l) => l.note !== 'Tip').reduce((s, l) => s + l.unitQty, 0);
+        bulk.push({ item: { id: setupId }, name: 'TABLE SETUP (Server)', price: 0, note: ('SET UP ' + tableTitle + ' · ' + name + ' · ' + count + ' item(s)').slice(0, 255) });
+      }
       lineItems.forEach((li, n) => {
         for (let i = 0; i < li.unitQty; i++) {
           const isTip = li.note === 'Tip';
           const b = { name: li.name, price: li.price, note: n === 0 && i === 0 ? head : '' };
-          if (li.itemId) b.item = { id: li.itemId }; else if (!isTip) b.taxRates = tax;
+          if (li.itemId) b.item = { id: li.itemId };
+          if (!isTip) b.taxRates = tax;
           bulk.push(b);
         }
       });
@@ -116,7 +123,8 @@ export default {
         if (!br.ok) {
           let okAll = true;
           for (const p of plain) {
-            let one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p) });
+            let one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p.note === 'Tip' || p.price === 0 ? p : { ...p, taxRates: tax }) });
+            if (!one.ok) one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify(p) });
             if (!one.ok && p.item) one = await fetch(api + '/orders/' + order.id + '/line_items', { method: 'POST', headers: auth, body: JSON.stringify({ name: p.name, price: p.price, note: p.note }) });
             if (!one.ok) { okAll = false; br = one; break; }
           }
