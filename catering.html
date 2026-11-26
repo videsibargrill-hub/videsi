@@ -306,6 +306,7 @@ footer{text-align:center;padding:40px 20px;border-top:1px solid var(--line);colo
 </div></header>
 <section class="gut"><div class="in">
  <div class="head"><div class="eyebrow">What We Cater</div><h2>Indian Food for Every Occasion</h2><div class="orn">◆</div><p>Led by Head Chef Akash Patel, with 17 years in five-star hospitality, we bring the full Videsi menu to your event.</p></div>
+ <div class="vwrap creel" style="margin:34px auto 30px"><button type="button" class="vsnd" id="csnd" aria-label="Turn sound on">🔇 Tap for sound</button><video id="cvid" src="/catering-reel.mp4" poster="/catering-reel-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Videsi catering setup: drinks station, fryums, salad, Manchurian, jeera rice, paneer curry, dal and gulab jamun"></video></div>
  <div class="cards">
   <div class="card wide"><h3>Large Events: <span style="white-space:nowrap">100–2,000+ Guests</span></h3><p>Weddings, festivals, religious and community gatherings and corporate events, prepared in our large production kitchen. <a href="/wedding-catering.html" style="color:var(--gold2)">See wedding catering</a>.</p></div>
   <div class="card"><h3>Birthdays &amp; Parties</h3><p>Biryani, curries, tandoori starters and sweets to make every celebration feel like home.</p></div>
@@ -349,5 +350,5 @@ footer{text-align:center;padding:40px 20px;border-top:1px solid var(--line);colo
 <a class="fab" href="/order.html">Order Online</a>
 <script>(function(){var f=document.querySelector(".fab");if(!f)return;var h=document.querySelector("header");function u(){var y=h?h.getBoundingClientRect().bottom:300;f.classList.toggle("show",y<60)}addEventListener("scroll",u,{passive:true});u()})();</script>
 <script>(function(){var b=document.querySelector(".mtog"),m=document.getElementById("mnav");if(!b||!m)return;function s(o){m.hidden=!o;b.setAttribute("aria-expanded",o);b.setAttribute("aria-label",o?"Close site menu":"Open site menu")}b.onclick=function(){s(m.hidden)};m.addEventListener("click",function(e){if(e.target.tagName==="A")s(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape")s(false)})})();</script>
-</body>
+<script>(function(){var v=document.getElementById('cvid'),b=document.getElementById('csnd');if(!v||!b)return;b.onclick=function(){v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.volume=.6;v.play()}b.textContent=v.muted?'🔇 Tap for sound':'🔊 Sound on';b.setAttribute('aria-label',v.muted?'Turn sound on':'Turn sound off')}})();</script></body>
 </html>

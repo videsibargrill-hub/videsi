@@ -303,6 +303,7 @@ footer{text-align:center;padding:40px 20px;border-top:1px solid var(--line);colo
  <div class="orn">◆</div>
  <p class="lead">Authentic Punjabi, Indian fusion and Desi Chinese wedding menus for 100 to 2,000+ guests, prepared in our large production kitchen and served across Kitchener-Waterloo and the GTA.</p>
  <div class="ctas"><a class="btn solid" href="#inquire">Get a Wedding Quote</a><a class="btn" href="tel:+17093417937">Call for Catering</a><a class="btn" href="#menu">Catering Menu</a></div>
+ <div class="vwrap creel" style="margin:34px auto 0"><button type="button" class="vsnd" id="csnd" aria-label="Turn sound on">🔇 Tap for sound</button><video id="cvid" src="/catering-reel.mp4" poster="/catering-reel-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Videsi catering setup: drinks station, fryums, salad, Manchurian, jeera rice, paneer curry, dal and gulab jamun"></video></div>
 </div></header>
 <section class="gut"><div class="in">
  <div class="head"><div class="eyebrow">Every Wedding Event</div><h2>From Mehndi to Reception</h2><div class="orn">◆</div><p>Led by Head Chef Akash Patel, with 17 years in five-star hospitality, we cater one event or your whole wedding celebration.</p></div>
@@ -350,5 +351,5 @@ footer{text-align:center;padding:40px 20px;border-top:1px solid var(--line);colo
 <a class="fab" href="/order.html">Order Online</a>
 <script>(function(){var f=document.querySelector(".fab");if(!f)return;var h=document.querySelector("header");function u(){var y=h?h.getBoundingClientRect().bottom:300;f.classList.toggle("show",y<60)}addEventListener("scroll",u,{passive:true});u()})();</script>
 <script>(function(){var b=document.querySelector(".mtog"),m=document.getElementById("mnav");if(!b||!m)return;function s(o){m.hidden=!o;b.setAttribute("aria-expanded",o);b.setAttribute("aria-label",o?"Close site menu":"Open site menu")}b.onclick=function(){s(m.hidden)};m.addEventListener("click",function(e){if(e.target.tagName==="A")s(false)});document.addEventListener("keydown",function(e){if(e.key==="Escape")s(false)})})();</script>
-</body>
+<script>(function(){var v=document.getElementById('cvid'),b=document.getElementById('csnd');if(!v||!b)return;b.onclick=function(){v.muted=!v.muted;if(!v.muted){v.currentTime=0;v.volume=.6;v.play()}b.textContent=v.muted?'🔇 Tap for sound':'🔊 Sound on';b.setAttribute('aria-label',v.muted?'Turn sound on':'Turn sound off')}})();</script></body>
 </html>
